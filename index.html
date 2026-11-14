@@ -136,6 +136,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
 .cal{display:grid;gap:8px;margin:10px 0}
 .cal div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:8px}
 .cal strong{font-size:14px}
+.pfig{margin:6px 0 8px}.pfig img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block}.pfig figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.key{background:var(--green-soft);border-left:4px solid var(--green);border-radius:8px;padding:12px 14px;font-weight:600;margin:10px 0 4px}
 .linkbtn{background:none;border:0;color:var(--green);text-decoration:underline;padding:0}
 @media (max-width:820px){
  .layout,.row2{grid-template-columns:minmax(0,1fr)}
@@ -638,10 +640,15 @@ document.querySelectorAll('[data-find]').forEach(function(b){b.onclick=function(
 $('rtForm').onsubmit=function(e){e.preventDefault();buildRoute()};
 /* ---------- справка ---------- */
 var infoTab='how';
+/* Подписи авторов фото (файлы лежат в папке photos). Пример: {'ambrosia.jpg':'Имя автора, лицензия CC BY-SA 4.0, Wikimedia Commons'} */
+var PHOTO_CREDIT={'ambrosia.jpg':'','polyn.jpg':''};
 var INFO={
- how:function(){return '<div class="prose"><div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><img src="logo.png" alt="" width="64" height="64" style="border-radius:50%;flex:none"><p style="margin:0">Амброзия полыннолистная (<i>Ambrosia artemisiifolia</i>) — однолетний сорняк. Её пыльца — сильный аллерген, поэтому важно находить заросли до цветения.</p></div>'+
-  '<h3>На что смотреть</h3><ul><li><b>Высота.</b> Весной небольшие всходы, к августу куст вырастает до 1,5–2 метров.</li><li><b>Листья.</b> Тёмно-зелёные, дважды перисто-рассечённые («кружевные»). С обеих сторон одного цвета.</li><li><b>Стебель.</b> Прямой, ветвистый, шероховатый, с короткими волосками.</li><li><b>Цветение.</b> На верхушках стеблей тонкие колоски из мелких зеленовато-жёлтых цветков. Они и пылят.</li></ul>'+
-  '<h3>Чем не путать</h3><div class="cmp"><div><b>Амброзия</b>Листья зелёные с обеих сторон, без серебристого оттенка. Куст кажется «кружевным».</div><div><b>Полынь обыкновенная</b>Листья снизу серебристо-белые, сверху тёмно-зелёные. Сильный горьковатый запах.</div></div>'+
+ how:function(){
+  function fig(file,cap){return '<figure class="pfig" hidden><img src="photos/'+file+'" alt="'+esc(cap)+'"><figcaption>'+esc(cap)+(PHOTO_CREDIT[file]?'. Фото: '+esc(PHOTO_CREDIT[file]):'')+'</figcaption></figure>'}
+  return '<div class="prose"><div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><img src="logo.png" alt="" width="64" height="64" style="border-radius:50%;flex:none"><p style="margin:0">Амброзия полыннолистная (<i>Ambrosia artemisiifolia</i>) — однолетний сорняк. Её пыльца — сильный аллерген, поэтому заросли важно находить до цветения.</p></div>'+
+  '<h3>Как выглядит амброзия</h3><ul><li><b>Высота.</b> Весной всходы совсем маленькие, к августу куст вырастает до 1,5–2 метров.</li><li><b>Листья.</b> Тёмно-зелёные, дважды перисто-рассечённые («кружевные»), с обеих сторон одного цвета.</li><li><b>Стебель.</b> Прямой, ветвистый, шероховатый, с короткими волосками.</li><li><b>Цветение.</b> На верхушках стеблей тонкие колоски из мелких зеленовато-жёлтых цветков. Именно они пылят.</li></ul>'+
+  '<h3>Амброзия или полынь?</h3><p>Их часто принимают друг за друга: листья похожи по форме. Запомните одно правило.</p><div class="key">Низ листа зелёный — это амброзия. Низ листа серебристо-белый — это полынь.</div>'+
+  '<div class="cmp"><div><b>Амброзия</b>'+fig('ambrosia.jpg','Амброзия полыннолистная')+'Лист зелёный с обеих сторон, без серебристого оттенка. Куст выглядит «кружевным».</div><div><b>Полынь обыкновенная</b>'+fig('polyn.jpg','Полынь обыкновенная')+'Сверху лист тёмно-зелёный, снизу серебристо-белый. Сильный горьковатый запах.</div></div>'+
   '<div class="warn">Не уверены? Всё равно отправьте фото: сотрудник проверит и подтвердит. В период цветения не срывайте растение голыми руками, а при выкосе используйте перчатки и маску.</div>'+
   '<button class="btn p" data-go="report">+ Сообщить об очаге</button></div>'},
  memo:function(){return '<div class="prose"><h3>В сезон пыления (конец июля – сентябрь)</h3><ul><li>Смотрите прогноз на сайте утром. Хуже всего в сухую ветреную жаркую погоду, лучше после дождя.</li><li>В пик закрывайте окна. Проветривайте после дождя или вечером.</li><li>Вернувшись домой, переодевайтесь, умывайтесь и промывайте нос солевым раствором.</li><li>Бельё сушите в помещении, пыльца оседает на мокрой ткани.</li><li>Чаще делайте влажную уборку. Солнцезащитные очки защищают глаза.</li><li>Планируйте путь через раздел «Маршрут»: обходите очаги.</li></ul>'+
@@ -655,9 +662,10 @@ var INFO={
   '<h3>Прогноз на ближайшие дни</h3>'+(rows?'<div class="table-wrap"><table><thead><tr><th>День</th><th>Ветер</th><th>Температура</th><th>Осадки</th><th>Пыльца</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="help">Уровень пыльцы: оценка проекта по погоде в сезон, либо данные CAMS через Open-Meteo, если они есть. Это не измерение. Вне сезона пыльцы амброзии почти нет.</p>':'<p class="help">Прогноз сейчас недоступен. Проверьте интернет.</p>')+'</div>'}
 };
 function renderInfo(){
-  var tabs=[['how','Как отличить амброзию'],['memo','Памятка аллергику'],['cal','Календарь и прогноз']],b=$('subtabs');b.innerHTML='';
+  var tabs=[['how','Узнать амброзию'],['memo','Памятка аллергику'],['cal','Календарь и прогноз']],b=$('subtabs');b.innerHTML='';
   tabs.forEach(function(t){var e=document.createElement('button');e.type='button';e.className='chip';e.textContent=t[1];e.setAttribute('role','tab');e.setAttribute('aria-pressed',String(infoTab===t[0]));e.onclick=function(){infoTab=t[0];renderInfo()};b.appendChild(e)});
   $('infoBox').innerHTML=INFO[infoTab]();
+  $('infoBox').querySelectorAll('.pfig img').forEach(function(im){var show=function(){im.parentNode.hidden=false};if(im.complete&&im.naturalWidth)show();else im.addEventListener('load',show)});
 }
 /* ---------- навигация ---------- */
 function renderAll(){stats();chips();drawMap();renderSide();renderPollen();if(rt.map)drawRoute();if(view==='info')renderInfo();if(view==='mine')renderMine();if(view==='cabinet')renderCabinet()}
