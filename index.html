@@ -613,19 +613,81 @@ function findAddr(which){
       li.appendChild(b);ul.appendChild(li)});
   }).catch(function(){ul.innerHTML='<li class="err">Поиск адреса сейчас недоступен. Проверьте интернет и повторьте.</li>'});
 }
+function osrm(pts,alt){
+  return jget('https://routing.openstreetmap.de/routed-foot/route/v1/foot/'+pts.map(function(p){return p[1]+','+p[0]}).join(';')+'?overview=full&geometries=geojson&steps=false&alternatives='+(alt?'true':'false')).then(function(r){return(r.routes||[])});
+}
+function mkRoute(x,via){var a=analyze(x.geometry.coordinates);return{a:a,len:a.len,via:via||[],latlngs:x.geometry.coordinates.map(function(c){return[c[1],c[0]]})}}
+/* ищем самую опасную точку маршрута и ставим путевую точку по обе стороны от очага */
+function detourPoints(r){
+  var pts=densify(r.latlngs.map(function(c){return[c[1],c[0]]}),15),hs=activeSpots(),bad=-1,i;
+  for(i=0;i<pts.length&&bad<0;i++)if(classify(pts[i],hs)!=='g')bad=i;
+  if(bad<0)return[];
+  var h=null,hd=1e9;
+  hs.forEach(function(q){var d=hav(pts[bad],[q.lat,q.lng])-(RAD[q.size]||80);if(d<hd){hd=d;h=q}});
+  /* точка маршрута, ближайшая к очагу: в ней идём «поперёк» */
+  var near=bad,nd=1e9;
+  for(i=0;i<pts.length;i++){var d=hav(pts[i],[h.lat,h.lng]);if(d<nd){nd=d;near=i}}
+  var p0=pts[Math.max(0,near-4)],p1=pts[Math.min(pts.length-1,near+4)],k=Math.cos(h.lat*Math.PI/180);
+  var dx=(p1[1]-p0[1])*k*111320,dy=(p1[0]-p0[0])*111320,L2=Math.sqrt(dx*dx+dy*dy)||1,nx=-dy/L2,ny=dx/L2;
+  var out=[];
+  [1,-1].forEach(function(sg){
+    [45,130].forEach(function(extra){
+      var D=(RAD[h.size]||80)+60+extra;
+      out.push([h.lat+sg*ny*D/111320,h.lng+sg*nx*D/(111320*k)]);
+    });
+  });
+  return out;
+}
+function insertVia(via,w,A,B){
+  var k=Math.cos(A.lat*Math.PI/180),ex=(B.lng-A.lng)*k,ey=B.lat-A.lat,l=ex*ex+ey*ey||1;
+  function t(p){return((p[1]-A.lng)*k*ex+(p[0]-A.lat)*ey)/l}
+  var v=via.concat([w]);v.sort(function(p,q){return t(p)-t(q)});return v;
+}
 function buildRoute(){
   var err=$('rtErr');err.textContent='';
   if(!rt.A||!rt.B){err.textContent='Найдите оба адреса и выберите их из списка.';return}
-  $('rtGo').disabled=true;$('rtGo').textContent='Строим…';
-  jget('https://routing.openstreetmap.de/routed-foot/route/v1/foot/'+rt.A.lng+','+rt.A.lat+';'+rt.B.lng+','+rt.B.lat+'?overview=full&geometries=geojson&alternatives=true&steps=false').then(function(r){
-    if(!r.routes||!r.routes.length)throw new Error('none');
-    rt.routes=r.routes.slice(0,3).map(function(x){var a=analyze(x.geometry.coordinates);return{a:a,len:a.len,latlngs:x.geometry.coordinates.map(function(c){return[c[1],c[0]]})}});
-    var best=0;rt.routes.forEach(function(x,i){var b=rt.routes[best];if(x.a.score<b.a.score||(x.a.score===b.a.score&&x.len<b.len))best=i});
-    rt.best=best;rt.sel=best;
+  var btn=$('rtGo');btn.disabled=true;btn.textContent='Строим…';
+  var A=[rt.A.lat,rt.A.lng],B=[rt.B.lat,rt.B.lng],all=[],seen={};
+  function add(r){var key=Math.round(r.len/25)+'_'+Math.round(r.a.score/25);if(seen[key])return false;seen[key]=1;all.push(r);return true}
+  osrm([A,B],true).then(function(rs){
+    if(!rs.length)throw new Error('none');
+    var beam=[];
+    rs.slice(0,3).forEach(function(x){var r=mkRoute(x,[]);if(add(r))beam.push(r)});
+    var step=0;
+    function iter(){
+      var clean=all.some(function(r){return r.a.score===0});
+      if(clean||step>=5||!beam.length)return;
+      step++;btn.textContent='Ищем обход очагов… '+step;
+      var jobs=[];
+      beam.slice(0,2).forEach(function(r){
+        if(r.a.score===0)return;
+        detourPoints(r).forEach(function(w){var via=insertVia(r.via,w,rt.A,rt.B);jobs.push(osrm([A].concat(via,[B]),false).then(function(rs2){return rs2[0]?mkRoute(rs2[0],via):null}).catch(function(){return null}))});
+      });
+      return Promise.all(jobs).then(function(rs2){
+        var fresh=[];rs2.forEach(function(r){if(r&&add(r))fresh.push(r)});
+        fresh.sort(function(p,q){return p.a.score-q.a.score||p.len-q.len});
+        beam=fresh;
+        return iter();
+      });
+    }
+    return iter();
+  }).then(function(){
+    var shortest=Math.min.apply(null,all.map(function(r){return r.len}));
+    var ok=all.filter(function(r){return r.len<=shortest*2.5+800});
+    ok.sort(function(p,q){return p.a.score-q.a.score||p.len-q.len});
+    /* в список: самый безопасный, затем самый короткий, затем лучший из остальных */
+    var pick=[ok[0]];
+    var sh=ok.slice().sort(function(p,q){return p.len-q.len})[0];if(pick.indexOf(sh)<0)pick.push(sh);
+    ok.forEach(function(r){if(pick.length<3&&pick.indexOf(r)<0)pick.push(r)});
+    rt.routes=pick;rt.best=0;rt.sel=0;rt.shortestLen=shortest;
+    var hs=activeSpots(),notes=[];
+    if(classify(A,hs)!=='g')notes.push('Точка A находится рядом с очагом, этот участок пути обойти нельзя.');
+    if(classify(B,hs)!=='g')notes.push('Точка B находится рядом с очагом, этот участок пути обойти нельзя.');
+    rt.notes=notes;
     drawRoute();renderRtOut();
-    var all=rt.routes.reduce(function(acc,x){return acc.concat(x.latlngs)},[]);if(rt.map)rt.map.fitBounds(all,{padding:[30,30]});
+    var pts=pick.reduce(function(acc,x){return acc.concat(x.latlngs)},[]);if(rt.map)rt.map.fitBounds(pts,{padding:[30,30]});
   }).catch(function(){rt.routes=[];renderRtOut();err.textContent='Не удалось построить маршрут. Сервис маршрутов временно недоступен, или точка далеко от пешеходных дорог.'})
-  .then(function(){$('rtGo').disabled=false;$('rtGo').textContent='Построить маршрут'});
+  .then(function(){btn.disabled=false;btn.textContent='Построить маршрут'});
 }
 function renderRtOut(){
   var o=$('rtOut');
@@ -633,7 +695,7 @@ function renderRtOut(){
   var t=todayInfo(),adv=(t&&t.lv>=2)?'<div class="notice">Сегодня пыльца активна. Даже на зелёном маршруте лучше выбрать более короткий путь и меньше времени проводить на улице.</div>':'';
   o.innerHTML='<b style="font-size:14px">Варианты пешего пути</b>'+rt.routes.map(function(r,i){
     var km=(r.len/1000).toFixed(1).replace('.',','),min=Math.max(1,Math.round(r.len/1.35/60));
-    return '<button type="button" class="rcard" data-r="'+i+'" aria-pressed="'+(i===rt.sel)+'"><div><span class="rtag '+r.a.rating+'">'+RTXT[r.a.rating]+'</span>'+(i===rt.best?' <span class="help"><b>Рекомендуем</b></span>':'')+'</div><b>Маршрут '+(i+1)+': '+km+' км, около '+min+' мин пешком</b><span class="help">'+(r.a.red+r.a.yel===0?'Рядом с очагами не проходит.':'Рядом с очагами: '+Math.round(r.a.yel)+' м, через зону очага: '+Math.round(r.a.red)+' м.')+'</span></button>'}).join('')+adv+'<p class="help">Это ориентир по данным жителей, а не гарантия отсутствия пыльцы. Пыльца переносится ветром на сотни метров.</p>';
+    return '<button type="button" class="rcard" data-r="'+i+'" aria-pressed="'+(i===rt.sel)+'"><div><span class="rtag '+r.a.rating+'">'+RTXT[r.a.rating]+'</span>'+(i===rt.best?' <span class="help"><b>Рекомендуем</b></span>':'')+'</div><b>Маршрут '+(i+1)+': '+km+' км, около '+min+' мин пешком</b>'+(r.len===rt.shortestLen&&i!==0?' <span class="help">(самый короткий)</span>':'')+'<span class="help">'+(r.a.red+r.a.yel===0?'Рядом с очагами не проходит.':'Рядом с очагами: '+Math.round(r.a.yel)+' м, через зону очага: '+Math.round(r.a.red)+' м.')+'</span></button>'}).join('')+adv+(rt.notes||[]).map(function(n){return '<div class="notice">'+n+'</div>'}).join('')+(rt.routes[0].a.red+rt.routes[0].a.yel>0&&!(rt.notes||[]).length?'<div class="notice">Полностью обойти очаги не удалось: другие пешие дороги слишком длинные или их нет. Выбран самый безопасный из найденных путей.</div>':'')+'<p class="help">Это ориентир по данным жителей, а не гарантия отсутствия пыльцы. Пыльца переносится ветром на сотни метров.</p>';
   o.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){rt.sel=+b.dataset.r;drawRoute();renderRtOut()}});
 }
 document.querySelectorAll('[data-find]').forEach(function(b){b.onclick=function(){findAddr(b.dataset.find)}});
