@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f7a45">
+<meta name="description" content="AntiAmbrosia — карта очагов амброзии в Ростове-на-Дону. Отметьте заросли и отправьте заявку на уборку.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>AntiAmbrosia — Дыши свободно</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#f4f9f1;--card:#fff;--ink:#17301f;--muted:#5d7466;--line:#d9e6d4;--green:#1f7a45;--green-soft:#e2f2e3;
+ --red:#d23b2e;--amber:#d9921a;--ok:#1f9a55;--focus:#1f6fd1;--f-h:'Unbounded','Onest',system-ui,sans-serif;--f-b:'Onest',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-b);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:0;z-index:1000;background:var(--card);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;background:none;border:0;padding:0;text-align:left}
+.brand img{width:38px;height:38px;border-radius:10px;flex:none}
+.brand b{display:block;font:600 17px/1.1 var(--f-h)}
+.brand span{font-size:12px;color:var(--muted)}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:9px 13px;border-radius:9px;font-weight:600;color:var(--muted)}
+.tab[aria-current="page"]{background:var(--green-soft);color:var(--green)}
+.tab.cta{background:var(--green);color:#fff}
+main{padding-block:18px 90px}
+.view{display:none}.view.on{display:block}
+.hero{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;margin-bottom:16px}
+.eyebrow{color:var(--green);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{font:600 clamp(24px,4vw,34px)/1.15 var(--f-h);margin:6px 0 8px;text-wrap:balance}
+h2{font:600 18px/1.25 var(--f-h);margin:0}
+.lead{margin:0;color:var(--muted);max-width:56ch}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:96px}
+.stat b{display:block;font:600 22px/1.1 var(--f-h);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.r b{color:var(--red)}.stat.a b{color:var(--amber)}.stat.g b{color:var(--ok)}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,1fr);gap:16px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.card-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+#map{height:480px;background:#e6efe1;z-index:0}
+#pickmap{height:300px;border-radius:12px;border:1px solid var(--line);z-index:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:10px 16px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.side{padding:16px;display:flex;flex-direction:column;gap:12px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--green);font-weight:700;border-radius:10px;padding:10px 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.p{background:var(--green);border-color:var(--green);color:#fff}
+.btn.d{background:var(--red);border-color:var(--red);color:#fff}
+.btn.block{width:100%}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.badge{display:inline-block;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:700;background:var(--c-bg);color:var(--c)}
+.st-pending{--c:#8a5a06;--c-bg:#fdf0d4}.st-work{--c:#8a5a06;--c-bg:#fdf0d4}.st-done{--c:#16693c;--c-bg:#dcf2e3}.st-rejected{--c:#555;--c-bg:#eee}
+.st-pending{--c:#b3261e;--c-bg:#fde7e4}
+.photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--green-soft);display:block}
+.nophoto{aspect-ratio:4/3;border-radius:12px;background:var(--green-soft);display:grid;place-items:center;color:var(--muted);font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:14px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;font-size:13.5px}
+.steps b{display:block;font-size:14px}
+.steps .n{width:34px;height:34px;border-radius:10px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-weight:700}
+.page{max-width:760px;margin:0 auto}
+.pad{padding:18px}
+.form{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.form>*,.row2>*,.upload>*{min-width:0}
+.row2 .btn{white-space:normal;text-align:center}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
+.f small,.help{font-weight:400;color:var(--muted);font-size:12.5px}
+input[type=text],input[type=email],input[type=password],select,textarea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;width:100%}
+textarea{min-height:76px;resize:vertical}
+input[type=file]{max-width:100%}
+.upload{border:1.5px dashed #b4d3b9;background:#f7fbf6;border-radius:12px;padding:14px;display:grid;gap:8px}
+.notice{background:var(--green-soft);border-radius:10px;padding:10px 12px;font-size:13px}
+.err{color:var(--red);font-size:13.5px}
+.ok{color:var(--ok);font-size:13.5px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:top}
+th{color:var(--muted);font-weight:600;background:#fafcf8;white-space:nowrap}
+td.act{white-space:nowrap}td.act .btn{padding:7px 12px;font-size:13px;margin:2px 4px 2px 0}
+.thumb{width:54px;height:42px;object-fit:cover;border-radius:6px;display:block}
+.empty{padding:34px 18px;text-align:center;color:var(--muted)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.demo{display:inline-block;background:#fff3d5;color:#7b520a;border-radius:7px;padding:4px 9px;font-size:12px;font-weight:700}
+.tl{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.tl i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.tl i.on{background:var(--green)}
+.tl hr{flex:1;border:0;border-top:2px solid var(--line);margin:0;min-width:10px}
+.mobnav{display:none}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#17301f;color:#fff;border-radius:10px;padding:11px 16px;font-size:14px;z-index:3000;max-width:90%;display:none}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90px}
+.pin{width:28px;height:34px;border:3px solid #fff;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);box-shadow:0 3px 9px #0004;display:grid;place-items:center;background:var(--pc)}
+.pin span{display:block;width:7px;height:7px;background:#fff;border-radius:50%;transform:rotate(45deg)}
+.pin.red{--pc:#d23b2e}.pin.amber{--pc:#d9921a}.pin.green{--pc:#1f9a55}
+.leaflet-container{font-family:var(--f-b)}
+@media (max-width:820px){
+ .layout,.row2{grid-template-columns:minmax(0,1fr)}
+ #map{height:56vh;min-height:340px}
+ nav.tabs{display:none}
+ .mobnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1500;background:var(--card);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+ .mobnav button{border:0;background:transparent;padding:6px 2px;font-size:11.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px}
+ .mobnav svg{width:22px;height:22px}
+ .mobnav button[aria-current="page"]{color:var(--green)}
+ header .wrap{padding-block:8px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <button class="brand" data-go="map" aria-label="На главную"><img src="logo.png" alt=""><div><b>AntiAmbrosia</b><span>Дыши свободно · Ростов-на-Дону</span></div></button>
+  <nav class="tabs" aria-label="Разделы">
+    <button class="tab" data-go="map">Карта</button>
+    <button class="tab" data-go="mine">Мои заявки</button>
+    <button class="tab" data-go="cabinet">Кабинет ТСЖ и УК</button>
+    <button class="tab cta" data-go="report">+ Сообщить об очаге</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+ <!-- КАРТА -->
+ <section id="v-map" class="view on">
+  <div class="hero">
+   <div><div class="eyebrow">Ростов-на-Дону</div><h1>Карта очагов амброзии</h1><p class="lead">Увидели заросли амброзии? Отметьте их на карте. Мы проверим и передадим заявку на выкос в управляющую компанию или ТСЖ.</p></div>
+   <div class="stats" aria-live="polite">
+    <div class="stat r"><b id="sR">0</b><span>очагов</span></div>
+    <div class="stat a"><b id="sA">0</b><span>в работе</span></div>
+    <div class="stat g"><b id="sG">0</b><span>устранено</span></div>
+   </div>
+  </div>
+  <div id="demoNote" class="notice" hidden style="margin-bottom:12px"></div>
+  <div class="layout">
+   <section class="card" aria-label="Карта">
+    <div class="card-h"><div><h2>Очаги на карте</h2><div class="sub">Цветной круг показывает примерный размер зарослей</div></div>
+     <div class="chips" id="chips" role="group" aria-label="Фильтр"></div></div>
+    <div id="map" role="application" aria-label="Карта Ростова-на-Дону с очагами амброзии"></div>
+    <div class="legend">
+     <span><i style="background:var(--red)"></i>Опасно</span>
+     <span><i style="background:var(--amber)"></i>В работе</span>
+     <span><i style="background:var(--ok)"></i>Устранено</span>
+     <span>Пунктир: ждёт проверки</span>
+     <span style="margin-left:auto"><button class="btn" id="locBtn" type="button" style="padding:5px 12px;font-size:13px">Где я?</button></span>
+    </div>
+   </section>
+   <aside class="card"><div class="side" id="side"></div></aside>
+  </div>
+ </section>
+
+ <!-- СООБЩИТЬ -->
+ <section id="v-report" class="view">
+  <div class="card page"><div class="pad">
+   <div class="eyebrow">Новая заявка</div><h1 style="font-size:24px">Сообщить об очаге</h1>
+   <p class="lead" style="margin-bottom:16px">Нажмите на карте место, где растёт амброзия, и добавьте фото. Сотрудник проверит заявку до того, как она станет «опасной».</p>
+   <form class="form" id="form" novalidate>
+    <div><b style="font-size:14px">1. Место на карте</b>
+     <div id="pickmap" style="margin-top:8px" role="application" aria-label="Выберите место на карте"></div>
+     <div class="row2" style="margin-top:8px"><button class="btn" type="button" id="gps">Определить моё местоположение</button><div class="help" id="pickInfo" style="align-self:center">Точка не выбрана</div></div>
+    </div>
+    <div class="upload"><b style="font-size:14px">2. Фото растения</b>
+     <input type="file" id="photo" accept="image/*" aria-label="Фото растения"><img id="prev" class="photo" alt="Предпросмотр фото" hidden>
+     <span class="help">Снимите куст целиком. По фото сотрудник проверит, что это амброзия.</span></div>
+    <div class="row2">
+     <label class="f">Где растёт<select id="place"><option>Двор многоквартирного дома</option><option>Пустырь</option><option>Обочина дороги</option><option>Территория школы или детсада</option><option>Частный сектор</option><option>Другое</option></select></label>
+     <label class="f">Размер зарослей<select id="size"><option value="s">Небольшой (до 1 м²)</option><option value="m" selected>Средний (1–10 м²)</option><option value="l">Большой (больше 10 м²)</option></select></label>
+    </div>
+    <label class="f">Адрес или ориентир<input type="text" id="addr" maxlength="120" placeholder="Например: ул. Пушкинская, у дома 12"></label>
+    <label class="f">Комментарий (по желанию)<textarea id="comment" maxlength="300" placeholder="Что рядом, как выглядят заросли"></textarea></label>
+    <div class="notice">Мы не собираем имя, телефон и другие личные данные. Фото и точка на карте станут видны всем.</div>
+    <div class="err" id="ferr" role="alert"></div>
+    <button class="btn p block" type="submit" id="send">Отправить на проверку</button>
+   </form>
+  </div></div>
+ </section>
+
+ <!-- МОИ ЗАЯВКИ -->
+ <section id="v-mine" class="view">
+  <div class="card"><div class="card-h"><div><h2>Мои заявки</h2><div class="sub">Заявки, отправленные с этого устройства</div></div><button class="btn p" data-go="report">+ Новая заявка</button></div>
+   <div id="mineBox"></div></div>
+ </section>
+
+ <!-- КАБИНЕТ -->
+ <section id="v-cabinet" class="view">
+  <div class="card"><div class="card-h"><div><h2>Кабинет ТСЖ и управляющих компаний</h2><div class="sub">Проверка заявок, передача в работу, отметка об устранении</div></div><span id="cabTag"></span></div>
+   <div id="cabBox"></div></div>
+ </section>
+</main>
+<footer>AntiAmbrosia · студенческий проект РГЭУ (РИНХ) · Карта © участники OpenStreetMap</footer>
+
+<nav class="mobnav" aria-label="Разделы">
+ <button data-go="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.800-7 11-7 11z"/><circle cx="12" cy="10" r="2.500"/></svg>Карта</button>
+ <button data-go="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Сообщить</button>
+ <button data-go="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>Заявки</button>
+ <button data-go="cabinet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6"/></svg>Кабинет</button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+'use strict';
+var CFG=window.AA_CONFIG||{};
+var LIVE=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
+var sb=LIVE?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+var CENTER=[47.2357,39.7015];
+var STATUS={pending:'На проверке',work:'Передано в работу',done:'Устранено',rejected:'Отклонено'};
+var RAD={s:40,m:80,l:130}, SIZENAME={s:'Небольшой (до 1 м²)',m:'Средний (1–10 м²)',l:'Большой (больше 10 м²)'};
+var items=[], filter='all', selId=null, view='map';
+var map=null, layers={}, pick=null, pickMarker=null, pickPt=null, photoBlob=null, session=null;
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function safeUrl(u){u=String(u||'');return /^(https:\/\/|data:image\/)/.test(u)?u:''}
+function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display='none'},3500)}
+function fdate(v){try{return new Date(v).toLocaleString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}catch(e){return''}}
+function color(x){return x.status==='done'?'green':x.status==='work'?'amber':'red'}
+function mine(){try{return JSON.parse(localStorage.getItem('aa_mine')||'[]')}catch(e){return[]}}
+function addMine(id){try{var m=mine();m.push(id);localStorage.setItem('aa_mine',JSON.stringify(m))}catch(e){}}
+
+/* ---------- данные ---------- */
+var DEMO=[
+ {id:'d1',lat:47.2227,lng:39.7187,address:'ул. Большая Садовая, у парка',place:'Пустырь',size:'l',comment:'Демонстрационный пример: крупные заросли у пешеходной дорожки.',status:'done',after:false,days:6},
+ {id:'d2',lat:47.2257,lng:39.7275,address:'пр. Ворошиловский, у остановки',place:'Обочина дороги',size:'m',comment:'Демонстрационный пример: уборка идёт.',status:'work',days:2},
+ {id:'d3',lat:47.2188,lng:39.7142,address:'ул. Пушкинская, зелёная зона',place:'Двор многоквартирного дома',size:'m',comment:'Демонстрационный пример: ждёт проверки.',status:'pending',days:0},
+ {id:'d4',lat:47.2330,lng:39.6980,address:'Район Северного жилого массива',place:'Территория школы или детсада',size:'l',comment:'Демонстрационный пример: за забором школы.',status:'pending',days:1},
+ {id:'d5',lat:47.2104,lng:39.7209,address:'Набережная, у дорожки',place:'Обочина дороги',size:'s',comment:'Демонстрационный пример: убрано.',status:'done',days:9}
+];
+function demoLoad(){
+  var saved=null;try{saved=JSON.parse(localStorage.getItem('aa_demo')||'null')}catch(e){}
+  if(saved)return saved;
+  return DEMO.map(function(d){var o=Object.assign({},d);o.created_at=new Date(Date.now()-d.days*86400000).toISOString();o.demo=true;delete o.days;return o});
+}
+function demoSave(){try{localStorage.setItem('aa_demo',JSON.stringify(items))}catch(e){toast('В браузере закончилось место для демо-данных.')}}
+
+function load(){
+  if(!LIVE){items=demoLoad();return Promise.resolve()}
+  return sb.from('reports').select('*').order('created_at',{ascending:false}).then(function(r){
+    if(r.error){toast('Не удалось загрузить данные. Проверьте интернет.');return}
+    items=r.data||[];
+  });
+}
+function uploadPhoto(blob,tag){
+  if(!blob)return Promise.resolve(null);
+  if(!LIVE)return toDataUrl(blob);
+  var path=tag+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.jpg';
+  return sb.storage.from('photos').upload(path,blob,{contentType:'image/jpeg'}).then(function(r){
+    if(r.error)throw r.error;return sb.storage.from('photos').getPublicUrl(path).data.publicUrl;
+  });
+}
+function toDataUrl(b){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(b)})}
+function shrink(file,max,q){
+  return new Promise(function(res,rej){
+    var url=URL.createObjectURL(file),im=new Image();
+    im.onerror=function(){URL.revokeObjectURL(url);rej(new Error('img'))};
+    im.onload=function(){var k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');
+      c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      c.toBlob(function(b){b?res(b):rej(new Error('blob'))},'image/jpeg',q)};
+    im.src=url;
+  });
+}
+
+/* ---------- карта ---------- */
+function tiles(m){
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(m);
+}
+function initMap(){
+  if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">Карта не загрузилась. Проверьте интернет и обновите страницу.</div>';return}
+  map=L.map('map',{zoomControl:true,keyboard:false}).setView(CENTER,13);tiles(map);
+  map.on('moveend',function(){});
+}
+function drawMap(){
+  if(!map)return;
+  Object.keys(layers).forEach(function(k){map.removeLayer(layers[k])});layers={};
+  items.forEach(function(x){
+    if(x.status==='rejected')return;
+    var c=color(x);if(filter!=='all'&&filter!==c)return;
+    var pal={red:'#d23b2e',amber:'#d9921a',green:'#1f9a55'}[c];
+    var g=L.layerGroup();
+    L.circle([x.lat,x.lng],{radius:RAD[x.size]||80,color:pal,weight:2,dashArray:x.status==='pending'?'6 6':null,fillColor:pal,fillOpacity:x.status==='pending'?.12:.28}).addTo(g).on('click',function(){select(x.id)});
+    L.marker([x.lat,x.lng],{icon:L.divIcon({className:'',html:'<div class="pin '+c+'"><span></span></div>',iconSize:[28,34],iconAnchor:[14,30]}),title:x.address||STATUS[x.status],keyboard:true}).addTo(g).on('click',function(){select(x.id)});
+    g.addTo(map);layers[x.id]=g;
+  });
+}
+function stats(){
+  var r=0,a=0,g=0;items.forEach(function(x){var c=color(x);if(x.status==='rejected')return;if(c==='red')r++;else if(c==='amber')a++;else g++});
+  $('sR').textContent=r;$('sA').textContent=a;$('sG').textContent=g;
+}
+function chips(){
+  var b=$('chips');b.innerHTML='';
+  [['all','Все'],['red','Опасные'],['amber','В работе'],['green','Устранены']].forEach(function(f){
+    var e=document.createElement('button');e.type='button';e.className='chip';e.textContent=f[1];e.setAttribute('aria-pressed',String(filter===f[0]));
+    e.onclick=function(){filter=f[0];chips();drawMap()};b.appendChild(e)});
+}
+function timeline(x){
+  var st=['pending','work','done'],i=st.indexOf(x.status);
+  return '<div class="tl" aria-label="Этапы">'+['Проверка','В работе','Устранено'].map(function(n,k){return '<i class="'+(k<=i?'on':'')+'"></i><span>'+n+'</span>'+(k<2?'<hr>':'')}).join('')+'</div>';
+}
+function select(id){
+  selId=id;var x=items.filter(function(i){return i.id===id})[0];
+  if(x&&map)map.panTo([x.lat,x.lng]);
+  renderSide();
+}
+function renderSide(){
+  var s=$('side'),x=items.filter(function(i){return i.id===selId})[0];
+  var how='<h2 style="font-size:15px">Как это работает</h2><ol class="steps"><li><span class="n">1</span><div><b>Вы отмечаете очаг</b>Фото и точка на карте.</div></li><li><span class="n">2</span><div><b>Мы проверяем</b>Сотрудник подтверждает, что это амброзия.</div></li><li><span class="n">3</span><div><b>ТСЖ или УК выкашивает</b>Статус меняется на «Устранено».</div></li></ol>';
+  if(!x){s.innerHTML='<h2>Очаг</h2><p class="help">Нажмите на отметку на карте, чтобы увидеть фото и статус.</p><button class="btn p block" data-go="report">+ Сообщить об очаге</button>'+how;return}
+  var ph=safeUrl(x.photo_url)||safeUrl(x.photo),af=safeUrl(x.after_url);
+  s.innerHTML='<div><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></div>'+
+   (ph?'<img class="photo" src="'+esc(ph)+'" alt="Фото очага">':'<div class="nophoto">Фото не добавлено</div>')+
+   (af?'<div class="help">Фото после уборки</div><img class="photo" src="'+esc(af)+'" alt="Фото после уборки">':'')+
+   timeline(x)+
+   '<dl class="kv"><dt>Адрес</dt><dd>'+esc(x.address||'не указан')+'</dd><dt>Место</dt><dd>'+esc(x.place||'')+'</dd><dt>Размер</dt><dd>'+esc(SIZENAME[x.size]||'')+'</dd><dt>Дата</dt><dd>'+esc(fdate(x.created_at))+'</dd>'+(x.comment?'<dt>Комментарий</dt><dd>'+esc(x.comment)+'</dd>':'')+'</dl>'+
+   (x.demo?'<div class="demo">Демонстрационный пример</div>':'')+
+   '<button class="btn block" data-go="report">+ Сообщить о другом очаге</button>';
+}
+function geolocate(cb){
+  if(!navigator.geolocation){toast('Этот браузер не умеет определять местоположение.');return}
+  navigator.geolocation.getCurrentPosition(function(p){cb([p.coords.latitude,p.coords.longitude])},function(){toast('Не удалось определить местоположение. Разрешите доступ в браузере или выберите точку на карте.')},{enableHighAccuracy:true,timeout:10000});
+}
+$('locBtn').onclick=function(){geolocate(function(ll){if(map){map.setView(ll,16);L.circleMarker(ll,{radius:8,color:'#1f6fd1',fillColor:'#1f6fd1',fillOpacity:.9}).addTo(map)}})};
+
+/* ---------- форма ---------- */
+function setPick(ll){
+  pickPt={lat:ll.lat!=null?ll.lat:ll[0],lng:ll.lng!=null?ll.lng:ll[1]};
+  if(pickMarker)pick.removeLayer(pickMarker);
+  pickMarker=L.marker([pickPt.lat,pickPt.lng]).addTo(pick);
+  $('pickInfo').textContent='Точка выбрана: '+pickPt.lat.toFixed(5)+', '+pickPt.lng.toFixed(5);
+}
+function initPick(){
+  if(pick||typeof L==='undefined')return;
+  pick=L.map('pickmap').setView(CENTER,13);tiles(pick);
+  pick.on('click',function(e){setPick(e.latlng)});
+}
+$('gps').onclick=function(){geolocate(function(ll){initPick();pick.setView(ll,17);setPick(ll)})};
+$('photo').onchange=function(){
+  var f=this.files&&this.files[0];photoBlob=null;$('prev').hidden=true;if(!f)return;
+  shrink(f,LIVE?1000:640,LIVE?.75:.6).then(function(b){photoBlob=b;$('prev').src=URL.createObjectURL(b);$('prev').hidden=false}).catch(function(){$('ferr').textContent='Не удалось прочитать фото. Выберите снимок JPG или PNG.'});
+};
+var sending=false;
+$('form').onsubmit=function(e){
+  e.preventDefault();if(sending)return;var err=$('ferr');err.textContent='';
+  if(!pickPt){err.textContent='Нажмите на карте место, где растёт амброзия.';return}
+  if(!photoBlob){err.textContent='Добавьте фото растения.';return}
+  sending=true;$('send').disabled=true;$('send').textContent='Отправляем…';
+  uploadPhoto(photoBlob,'before').then(function(url){
+    var rec={lat:pickPt.lat,lng:pickPt.lng,address:$('addr').value.trim().slice(0,120),place:$('place').value,size:$('size').value,comment:$('comment').value.trim().slice(0,300),status:'pending',photo_url:url,demo:false};
+    if(LIVE)return sb.from('reports').insert(rec).select().then(function(r){if(r.error)throw r.error;return r.data[0]});
+    rec.id='l'+Date.now();rec.created_at=new Date().toISOString();items.unshift(rec);demoSave();return rec;
+  }).then(function(rec){
+    addMine(rec.id);return load().then(function(){return rec});
+  }).then(function(rec){
+    $('form').reset();$('prev').hidden=true;photoBlob=null;pickPt=null;if(pickMarker){pick.removeLayer(pickMarker);pickMarker=null}$('pickInfo').textContent='Точка не выбрана';
+    toast('Заявка отправлена на проверку.');selId=rec.id;go('mine');
+  }).catch(function(x){err.textContent='Не удалось отправить заявку. Проверьте интернет и попробуйте ещё раз.';console.error(x)}).then(function(){sending=false;$('send').disabled=false;$('send').textContent='Отправить на проверку'});
+};
+
+/* ---------- мои заявки ---------- */
+function renderMine(){
+  var ids=mine(),list=items.filter(function(x){return ids.indexOf(x.id)>-1});
+  var b=$('mineBox');
+  if(!list.length){b.innerHTML='<div class="empty"><b>Пока нет заявок</b><p>Отметьте очаг на карте, и он появится здесь со статусом.</p><button class="btn p" data-go="report">Сообщить об очаге</button></div>';return}
+  b.innerHTML='<div class="table-wrap"><table><thead><tr><th>Фото</th><th>Адрес</th><th>Дата</th><th>Статус</th></tr></thead><tbody>'+list.map(function(x){
+    var ph=safeUrl(x.photo_url)||safeUrl(x.photo);
+    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span><div style="margin-top:6px">'+(x.status==='rejected'?'':timeline(x))+'</div></td></tr>'}).join('')+'</tbody></table></div>';
+}
+
+/* ---------- кабинет ---------- */
+function renderCabinet(){
+  var b=$('cabBox'),tag=$('cabTag');
+  if(LIVE&&!session){
+    tag.innerHTML='';
+    b.innerHTML='<div class="pad page" style="max-width:420px"><p class="help">Вход для сотрудников ТСЖ и управляющих компаний.</p><form class="form" id="login"><label class="f">Электронная почта<input type="email" id="lmail" autocomplete="username" required></label><label class="f">Пароль<input type="password" id="lpass" autocomplete="current-password" required></label><div class="err" id="lerr" role="alert"></div><button class="btn p block" type="submit">Войти</button></form></div>';
+    $('login').onsubmit=function(e){e.preventDefault();$('lerr').textContent='';
+      sb.auth.signInWithPassword({email:$('lmail').value.trim(),password:$('lpass').value}).then(function(r){
+        if(r.error){$('lerr').textContent='Неверная почта или пароль.';return}session=r.data.session;load().then(renderAll)});};
+    return;
+  }
+  tag.innerHTML=LIVE?'<button class="btn" id="logout" type="button">Выйти</button>':'<span class="demo">Демо-доступ без входа</span>';
+  if(LIVE)$('logout').onclick=function(){sb.auth.signOut().then(function(){session=null;load().then(renderAll)})};
+  var list=items.slice();
+  var cnt={pending:0,work:0,done:0};list.forEach(function(x){if(cnt[x.status]!=null)cnt[x.status]++});
+  b.innerHTML='<div class="pad" style="padding-bottom:0"><div class="stats"><div class="stat r"><b>'+cnt.pending+'</b><span>ждут проверки</span></div><div class="stat a"><b>'+cnt.work+'</b><span>в работе</span></div><div class="stat g"><b>'+cnt.done+'</b><span>устранено</span></div></div></div>'+
+  '<div class="table-wrap"><table><thead><tr><th>Фото</th><th>Адрес</th><th>Размер</th><th>Дата</th><th>Статус</th><th>Действие</th></tr></thead><tbody>'+list.map(function(x){
+    var ph=safeUrl(x.photo_url)||safeUrl(x.photo),act='';
+    if(x.status==='pending')act='<button class="btn p" data-act="work" data-id="'+esc(x.id)+'">Подтвердить и передать в работу</button><button class="btn d" data-act="rejected" data-id="'+esc(x.id)+'">Не амброзия</button>';
+    else if(x.status==='work')act='<label class="btn p" style="cursor:pointer;margin:2px 0">Отметить устранённым<input type="file" accept="image/*" hidden data-done="'+esc(x.id)+'"></label><div class="help">Можно приложить фото после уборки</div>';
+    else act='<span class="help">Завершено</span>';
+    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(SIZENAME[x.size]||'')+'</td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></td><td class="act">'+act+'</td></tr>'}).join('')+'</tbody></table></div>';
+  b.querySelectorAll('[data-act]').forEach(function(e){e.onclick=function(){setStatus(e.dataset.id,e.dataset.act)}});
+  b.querySelectorAll('[data-done]').forEach(function(e){e.onchange=function(){
+    var f=e.files&&e.files[0],id=e.dataset.done;
+    (f?shrink(f,LIVE?1000:640,LIVE?.75:.6).then(function(bl){return uploadPhoto(bl,'after')}):Promise.resolve(null)).then(function(url){setStatus(id,'done',url)}).catch(function(){toast('Не удалось обработать фото.')});}});
+}
+function setStatus(id,st,afterUrl){
+  var p;
+  if(LIVE){var patch={status:st};if(afterUrl)patch.after_url=afterUrl;p=sb.from('reports').update(patch).eq('id',id).then(function(r){if(r.error)throw r.error})}
+  else{var x=items.filter(function(i){return i.id===id})[0];if(x){x.status=st;if(afterUrl)x.after_url=afterUrl;demoSave()}p=Promise.resolve()}
+  p.then(function(){return load()}).then(function(){toast(st==='work'?'Заявка передана в работу.':st==='done'?'Отмечено как устранённое.':'Заявка отклонена.');renderAll()}).catch(function(){toast('Не удалось изменить статус. Войдите в кабинет заново.')});
+}
+
+/* ---------- навигация ---------- */
+function renderAll(){stats();chips();drawMap();renderSide();if(view==='mine')renderMine();if(view==='cabinet')renderCabinet()}
+function go(v){
+  view=v;document.querySelectorAll('.view').forEach(function(e){e.classList.toggle('on',e.id==='v-'+v)});
+  document.querySelectorAll('[data-go]').forEach(function(b){if(b.classList.contains('tab')||b.closest('.mobnav')){if(b.dataset.go===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}});
+  if(v==='report'){initPick();setTimeout(function(){if(pick)pick.invalidateSize()},60)}
+  if(v==='map')setTimeout(function(){if(map)map.invalidateSize()},60);
+  if(v==='mine')renderMine();
+  if(v==='cabinet')renderCabinet();
+  if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go)}});
+window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(['map','report','mine','cabinet'].indexOf(h)>-1&&h!==view)go(h)});
+
+/* ---------- запуск ---------- */
+if(!LIVE){var n=$('demoNote');n.hidden=false;n.textContent='Демо-режим: отметки хранятся только в этом браузере, пять примеров на карте придуманы для показа. Общая база подключается в файле config.js.'}
+initMap();
+(LIVE?sb.auth.getSession().then(function(r){session=r.data&&r.data.session}):Promise.resolve()).then(load).then(function(){
+  var h=location.hash.slice(1);renderAll();go(['map','report','mine','cabinet'].indexOf(h)>-1?h:'map');
+  var top=function(){window.scrollTo(0,0)};top();requestAnimationFrame(top);setTimeout(top,400);
+});
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});
+})();
+</script>
+</body>
+</html>
