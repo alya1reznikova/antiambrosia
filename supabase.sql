@@ -37,3 +37,14 @@ create policy "photos_insert" on storage.objects for insert
   to anon, authenticated with check (bucket_id = 'photos');
 create policy "photos_read" on storage.objects for select
   using (bucket_id = 'photos');
+
+-- Настройки сайта (уровень пыльцы, который вручную указывает команда)
+create table if not exists settings (
+  key text primary key,
+  value jsonb not null default '{}',
+  updated_at timestamptz not null default now()
+);
+alter table settings enable row level security;
+create policy "settings_read" on settings for select using (true);
+create policy "settings_insert" on settings for insert to authenticated with check (true);
+create policy "settings_update" on settings for update to authenticated using (true) with check (true);

@@ -106,15 +106,50 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
 .pin span{display:block;width:7px;height:7px;background:#fff;border-radius:50%;transform:rotate(45deg)}
 .pin.red{--pc:#d23b2e}.pin.amber{--pc:#d9921a}.pin.green{--pc:#1f9a55}
 .leaflet-container{font-family:var(--f-b)}
+.pbox{border-radius:14px;padding:12px 16px;margin-bottom:14px;border:1px solid var(--pc-line);background:var(--pc-bg);color:var(--ink)}
+.pbox b{display:block;font:600 15px/1.3 var(--f-h);margin-bottom:4px}
+.pbox p{margin:0 0 6px}
+.pbox small{color:var(--muted);font-size:12.5px;display:block}
+.pbox small a{color:inherit}
+.pbox.lv0{--pc-bg:#e6f4e8;--pc-line:#bfe0c6}.pbox.lv1{--pc-bg:#fdf3d8;--pc-line:#f0d98c}.pbox.lv2,.pbox.lv3{--pc-bg:#fde6e3;--pc-line:#f2b3ac}
+.lvl{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+.lvl.l0{background:#dcf2e3;color:#16693c}.lvl.l1{background:#fdf0d4;color:#8a5a06}.lvl.l2,.lvl.l3{background:#fde7e4;color:#b3261e}
+#routemap{height:460px;background:#e6efe1;z-index:0;border-radius:0}
+.rt-form{display:grid;gap:10px;padding:16px}
+.rt-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.sug{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.sug button{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;font-size:13.5px}
+.rcard{display:grid;gap:4px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;text-align:left;width:100%}
+.rcard[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
+.rcard b{font-size:14px}
+.rtag{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+.rtag.g{background:#dcf2e3;color:#16693c}.rtag.y{background:#fdf0d4;color:#8a5a06}.rtag.r{background:#fde7e4;color:#b3261e}
+.ab{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 2px 6px #0005;font-size:13px}
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.prose{padding:18px;max-width:78ch}
+.prose h3{font:600 16px/1.3 var(--f-h);margin:18px 0 8px}.prose h3:first-child{margin-top:0}
+.prose ul{margin:0 0 10px;padding-left:20px}.prose li{margin:4px 0}
+.prose .warn{background:#fff3d5;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:12px 0}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.cmp div{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafcf8}
+.cmp b{display:block;margin-bottom:4px}
+.cal{display:grid;gap:8px;margin:10px 0}
+.cal div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:8px}
+.cal strong{font-size:14px}
+.linkbtn{background:none;border:0;color:var(--green);text-decoration:underline;padding:0}
 @media (max-width:820px){
  .layout,.row2{grid-template-columns:minmax(0,1fr)}
  #map{height:56vh;min-height:340px}
  nav.tabs{display:none}
- .mobnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1500;background:var(--card);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+ .mobnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1500;background:var(--card);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
  .mobnav button{border:0;background:transparent;padding:6px 2px;font-size:11.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px}
  .mobnav svg{width:22px;height:22px}
  .mobnav button[aria-current="page"]{color:var(--green)}
  header .wrap{padding-block:8px}
+ .cmp{grid-template-columns:minmax(0,1fr)}
+ .cal div{grid-template-columns:minmax(0,1fr);gap:2px}
+ #routemap{height:52vh;min-height:320px}
+ .rt-row{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
@@ -124,6 +159,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
   <button class="brand" data-go="map" aria-label="На главную"><img src="logo.png" alt=""><div><b>AntiAmbrosia</b><span>Дыши свободно · Ростов-на-Дону</span></div></button>
   <nav class="tabs" aria-label="Разделы">
     <button class="tab" data-go="map">Карта</button>
+    <button class="tab" data-go="route">Маршрут</button>
+    <button class="tab" data-go="info">Справка</button>
     <button class="tab" data-go="mine">Мои заявки</button>
     <button class="tab" data-go="cabinet">Кабинет ТСЖ и УК</button>
     <button class="tab cta" data-go="report">+ Сообщить об очаге</button>
@@ -141,6 +178,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
     <div class="stat g"><b id="sG">0</b><span>устранено</span></div>
    </div>
   </div>
+  <div id="pollen"></div>
   <div id="demoNote" class="notice" hidden style="margin-bottom:12px"></div>
   <div class="layout">
    <section class="card" aria-label="Карта">
@@ -185,6 +223,44 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
   </div></div>
  </section>
 
+ <!-- МАРШРУТ -->
+ <section id="v-route" class="view">
+  <div class="hero"><div><div class="eyebrow">Для аллергиков</div><h1>Безопасный маршрут</h1><p class="lead">Введите, откуда и куда идти. Сайт построит пеший путь и покажет, где он проходит рядом с очагами амброзии: зелёным, жёлтым или красным.</p></div></div>
+  <div id="pollen2"></div>
+  <div class="layout">
+   <section class="card">
+    <div id="routemap" role="application" aria-label="Карта маршрута"></div>
+    <div class="legend">
+     <span><i style="background:var(--ok)"></i>Безопасно</span>
+     <span><i style="background:var(--amber)"></i>Рядом с очагом (до 60 м)</span>
+     <span><i style="background:var(--red)"></i>Через зону очага</span>
+    </div>
+   </section>
+   <aside class="card">
+    <form class="rt-form" id="rtForm" novalidate>
+     <div><label class="f" for="rtA">Откуда<small>Улица и номер дома</small></label>
+      <div class="rt-row"><input type="text" id="rtA" maxlength="120" placeholder="Например: Большая Садовая, 50" autocomplete="off"><button class="btn" type="button" data-find="A">Найти</button></div>
+      <ul class="sug" id="sugA"></ul><div class="help" id="selA"></div></div>
+     <div><label class="f" for="rtB">Куда<small>Улица и номер дома</small></label>
+      <div class="rt-row"><input type="text" id="rtB" maxlength="120" placeholder="Например: проспект Ворошиловский, 12" autocomplete="off"><button class="btn" type="button" data-find="B">Найти</button></div>
+      <ul class="sug" id="sugB"></ul><div class="help" id="selB"></div></div>
+     <button class="btn p block" type="submit" id="rtGo">Построить маршрут</button>
+     <div class="err" id="rtErr" role="alert"></div>
+    </form>
+    <div class="side" id="rtOut" style="padding-top:0"></div>
+   </aside>
+  </div>
+ </section>
+
+ <!-- СПРАВКА -->
+ <section id="v-info" class="view">
+  <div class="card">
+   <div class="card-h"><div><h2>Справка</h2><div class="sub">Как отличить амброзию, что делать аллергику, когда сезон</div></div></div>
+   <div class="subtabs" id="subtabs" role="tablist"></div>
+   <div id="infoBox"></div>
+  </div>
+ </section>
+
  <!-- МОИ ЗАЯВКИ -->
  <section id="v-mine" class="view">
   <div class="card"><div class="card-h"><div><h2>Мои заявки</h2><div class="sub">Заявки, отправленные с этого устройства</div></div><button class="btn p" data-go="report">+ Новая заявка</button></div>
@@ -197,13 +273,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
    <div id="cabBox"></div></div>
  </section>
 </main>
-<footer>AntiAmbrosia · студенческий проект РГЭУ (РИНХ) · Карта © участники OpenStreetMap</footer>
+<footer><div style="margin-bottom:6px"><button class="linkbtn" data-go="cabinet">Кабинет для ТСЖ и управляющих компаний</button></div>AntiAmbrosia · студенческий проект РГЭУ (РИНХ) · Карта © участники OpenStreetMap</footer>
 
 <nav class="mobnav" aria-label="Разделы">
  <button data-go="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.800-7 11-7 11z"/><circle cx="12" cy="10" r="2.500"/></svg>Карта</button>
+ <button data-go="route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a4 4 0 000-8h-4a4 4 0 010-4h6"/></svg>Маршрут</button>
  <button data-go="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Сообщить</button>
+ <button data-go="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M9 9h6M9 13h6"/></svg>Справка</button>
  <button data-go="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>Заявки</button>
- <button data-go="cabinet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6"/></svg>Кабинет</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 
@@ -394,13 +471,16 @@ function renderCabinet(){
   if(LIVE)$('logout').onclick=function(){sb.auth.signOut().then(function(){session=null;load().then(renderAll)})};
   var list=items.slice();
   var cnt={pending:0,work:0,done:0};list.forEach(function(x){if(cnt[x.status]!=null)cnt[x.status]++});
+  var ov=(override&&override.level!=null)?override:null;
   b.innerHTML='<div class="pad" style="padding-bottom:0"><div class="stats"><div class="stat r"><b>'+cnt.pending+'</b><span>ждут проверки</span></div><div class="stat a"><b>'+cnt.work+'</b><span>в работе</span></div><div class="stat g"><b>'+cnt.done+'</b><span>устранено</span></div></div></div>'+
+  '<div class="pad"><b style="font-size:14px">Уровень пыльцы на сегодня (для плашки на сайте)</b><div class="row2" style="margin-top:8px"><label class="f">Уровень<select id="pLv"><option value="">Авто, по погоде</option>'+LV.map(function(n,i){return '<option value="'+i+'"'+(ov&&ov.level===i?' selected':'')+'>'+n+'</option>'}).join('')+'</select></label><label class="f">Источник или комментарий<input type="text" id="pNote" maxlength="100" placeholder="Например: по данным Pollen Club" value="'+esc(ov&&ov.note||'')+'"></label></div><button class="btn" id="pSave" type="button" style="margin-top:8px">Сохранить уровень</button> <span class="help">Действует 36 часов, потом снова авто.</span></div>'+
   '<div class="table-wrap"><table><thead><tr><th>Фото</th><th>Адрес</th><th>Размер</th><th>Дата</th><th>Статус</th><th>Действие</th></tr></thead><tbody>'+list.map(function(x){
     var ph=safeUrl(x.photo_url)||safeUrl(x.photo),act='';
     if(x.status==='pending')act='<button class="btn p" data-act="work" data-id="'+esc(x.id)+'">Подтвердить и передать в работу</button><button class="btn d" data-act="rejected" data-id="'+esc(x.id)+'">Не амброзия</button>';
     else if(x.status==='work')act='<label class="btn p" style="cursor:pointer;margin:2px 0">Отметить устранённым<input type="file" accept="image/*" hidden data-done="'+esc(x.id)+'"></label><div class="help">Можно приложить фото после уборки</div>';
     else act='<span class="help">Завершено</span>';
     return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(SIZENAME[x.size]||'')+'</td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></td><td class="act">'+act+'</td></tr>'}).join('')+'</tbody></table></div>';
+  $('pSave').onclick=function(){saveOverride($('pLv').value,$('pNote').value.trim().slice(0,100)).then(function(){renderPollen();toast('Уровень пыльцы сохранён.')}).catch(function(){toast('Не удалось сохранить. Войдите в кабинет заново.')})};
   b.querySelectorAll('[data-act]').forEach(function(e){e.onclick=function(){setStatus(e.dataset.id,e.dataset.act)}});
   b.querySelectorAll('[data-done]').forEach(function(e){e.onchange=function(){
     var f=e.files&&e.files[0],id=e.dataset.done;
@@ -413,26 +493,194 @@ function setStatus(id,st,afterUrl){
   p.then(function(){return load()}).then(function(){toast(st==='work'?'Заявка передана в работу.':st==='done'?'Отмечено как устранённое.':'Заявка отклонена.');renderAll()}).catch(function(){toast('Не удалось изменить статус. Войдите в кабинет заново.')});
 }
 
+/* ---------- погода и пыльца ---------- */
+var LV=['Низкий','Средний','Высокий','Очень высокий'];
+var wx=null, override=null;
+function inSeason(d){var m=d.getMonth()+1,day=d.getDate();return (m===7&&day>=20)||m===8||m===9}
+function lvFromIndex(v){return v>=200?3:v>=50?2:v>=10?1:0}
+function estimateDay(d){
+  if(d.pollen!=null)return {lv:lvFromIndex(d.pollen),src:'data'};
+  var dt=new Date(d.date+'T12:00:00');
+  if(!inSeason(dt))return {lv:0,src:'off'};
+  var s=0;if(d.wind>=7)s++;if(d.wind>=10)s++;if(d.rain<0.5)s++;if(d.tmax>=25)s++;
+  return {lv:s>=4?3:s===3?2:s===2?1:0,src:'est'};
+}
+function jget(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+function loadWeather(){
+  var w='https://api.open-meteo.com/v1/forecast?latitude=47.236&longitude=39.70&daily=temperature_2m_max,precipitation_sum,wind_speed_10m_max&wind_speed_unit=ms&timezone=Europe%2FMoscow&forecast_days=5';
+  var a='https://air-quality-api.open-meteo.com/v1/air-quality?latitude=47.236&longitude=39.70&hourly=ragweed_pollen&timezone=Europe%2FMoscow&forecast_days=4';
+  return Promise.all([jget(w),jget(a).catch(function(){return null})]).then(function(r){
+    var d=r[0].daily,pol={};
+    if(r[1]&&r[1].hourly&&r[1].hourly.time){r[1].hourly.time.forEach(function(t,i){var v=r[1].hourly.ragweed_pollen[i];if(v!=null){var k=t.slice(0,10);pol[k]=Math.max(pol[k]||0,v)}})}
+    wx=d.time.map(function(t,i){return{date:t,wind:d.wind_speed_10m_max[i],tmax:d.temperature_2m_max[i],rain:d.precipitation_sum[i],pollen:pol[t]!=null?pol[t]:null}});
+  }).catch(function(){wx=null});
+}
+function loadOverride(){
+  if(!LIVE){try{override=JSON.parse(localStorage.getItem('aa_pollen')||'null')}catch(e){override=null}return Promise.resolve()}
+  return sb.from('settings').select('value').eq('key','pollen').maybeSingle().then(function(r){override=r&&r.data?r.data.value:null}).catch(function(){override=null});
+}
+function saveOverride(lv,note){
+  var v=lv===''?null:{level:+lv,note:note,at:new Date().toISOString()};
+  if(!LIVE){try{if(v)localStorage.setItem('aa_pollen',JSON.stringify(v));else localStorage.removeItem('aa_pollen')}catch(e){}override=v;return Promise.resolve()}
+  return sb.from('settings').upsert({key:'pollen',value:v||{},updated_at:new Date().toISOString()}).then(function(r){if(r.error)throw r.error;override=v});
+}
+function todayInfo(){
+  if(override&&override.at&&override.level!=null&&Date.now()-new Date(override.at).getTime()<36*3600*1000){
+    return {lv:override.level,src:'team',note:override.note,at:override.at,day:wx&&wx[0]};
+  }
+  if(!wx)return null;
+  var e=estimateDay(wx[0]);e.day=wx[0];return e;
+}
+function pollenHtml(){
+  var t=todayInfo();
+  if(!t)return '<div class="pbox lv0" role="status"><b>Пыльца и ветер сегодня</b><p>Прогноз сейчас недоступен. Подробнее на <a href="https://pogoda.mail.ru/allergy/rostov-na-donu/" target="_blank" rel="noopener">Погоде Mail.ru</a>, в приложении <a href="https://apps.apple.com/app/id988384559" target="_blank" rel="noopener">Pollen Club</a> или на <a href="https://www.gismeteo.ru/" target="_blank" rel="noopener">Gismeteo</a>.</p></div>';
+  var lv=t.lv,title,text;
+  if(lv>=2){title='Сегодня пыльца активна: уровень «'+LV[lv].toLowerCase()+'»';
+    text=(t.day&&t.day.wind>=7?'Ветрено':'Погода благоприятна для пыления')+(t.day&&t.day.rain<0.5?' и сухо':'')+'. Если врач назначил вам антигистаминное средство, не забудьте его принять. Лучше закрыть окна и меньше быть на улице в дневные часы.'}
+  else if(lv===1){title='Пыльца умеренная: уровень «средний»';text='Если вы чувствительны к пыльце, закрывайте окна днём и после прогулки умывайтесь и промывайте нос.'}
+  else if(t.src==='off'){title='Сезон амброзии не идёт';text='Обычно она пылит с конца июля по сентябрь. Сейчас пыльцы амброзии почти нет.'}
+  else{title='Сегодня пыльцы мало';text='Погода спокойная, можно гулять в обычном режиме.'}
+  var d=t.day,det=d?('Ветер до '+Math.round(d.wind)+' м/с · до '+Math.round(d.tmax)+' °C · '+(d.rain>=0.5?'осадки '+d.rain.toFixed(1)+' мм':'без осадков')):'';
+  var src=t.src==='team'?'По данным команды проекта'+(t.note?': '+esc(t.note):'')+'.':t.src==='data'?'Уровень по данным CAMS через Open-Meteo, пороги ориентировочные.':'Это оценка проекта по погоде, а не измерение.';
+  return '<div class="pbox lv'+lv+'" role="status"><b>'+esc(title)+'</b><p>'+esc(text)+'</p><small>'+esc(det)+(det?' · ':'')+src+' Не заменяет совет врача. Подробнее: <a href="https://pogoda.mail.ru/allergy/rostov-na-donu/" target="_blank" rel="noopener">Погода Mail.ru</a>, <a href="https://apps.apple.com/app/id988384559" target="_blank" rel="noopener">Pollen Club</a>, <a href="https://www.gismeteo.ru/" target="_blank" rel="noopener">Gismeteo</a>. Погода: Open-Meteo.</small></div>';
+}
+function renderPollen(){var h=pollenHtml();$('pollen').innerHTML=h;$('pollen2').innerHTML=h}
+/* ---------- безопасный маршрут ---------- */
+var rt={map:null,group:null,A:null,B:null,routes:[],sel:0};
+function hav(a,b){var R=6371000,r=Math.PI/180,dl=(b[0]-a[0])*r,dn=(b[1]-a[1])*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dn/2)*Math.sin(dn/2);return 2*R*Math.asin(Math.sqrt(x))}
+function densify(c,step){
+  var out=[[c[0][1],c[0][0]]];
+  for(var i=1;i<c.length;i++){var a=[c[i-1][1],c[i-1][0]],b=[c[i][1],c[i][0]],d=hav(a,b),n=Math.max(1,Math.ceil(d/step));
+    for(var k=1;k<=n;k++)out.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}
+  return out;
+}
+function activeSpots(){return items.filter(function(x){return x.status==='pending'||x.status==='work'})}
+function classify(p,hs){
+  var cls='g';
+  hs.forEach(function(h){var d=hav(p,[h.lat,h.lng]),r=RAD[h.size]||80;if(d<=r)cls='r';else if(d<=r+60&&cls!=='r')cls='y'});
+  return cls;
+}
+function analyze(coords){
+  var pts=densify(coords,15),hs=activeSpots(),segs=[],red=0,yel=0,tot=0,cur=null;
+  for(var i=1;i<pts.length;i++){
+    var m=[(pts[i-1][0]+pts[i][0])/2,(pts[i-1][1]+pts[i][1])/2],d=hav(pts[i-1],pts[i]),c=classify(m,hs);
+    tot+=d;if(c==='r')red+=d;else if(c==='y')yel+=d;
+    if(cur&&cur.c===c)cur.pts.push(pts[i]);else{cur={c:c,pts:[pts[i-1],pts[i]]};segs.push(cur)}
+  }
+  var rating=(red===0&&yel<30)?'g':(red<30?'y':'r');
+  return {segs:segs,red:red,yel:yel,len:tot,rating:rating,score:red*3+yel};
+}
+var COL={g:'#1f9a55',y:'#d9921a',r:'#d23b2e'};
+var RTXT={g:'Безопасный',y:'Есть участки риска',r:'Опасный'};
+function initRouteMap(){
+  if(rt.map||typeof L==='undefined')return;
+  rt.map=L.map('routemap',{keyboard:false}).setView(CENTER,13);tiles(rt.map);rt.group=L.layerGroup().addTo(rt.map);drawRoute();
+}
+function abIcon(t){return L.divIcon({className:'',html:'<div class="ab">'+t+'</div>',iconSize:[26,26],iconAnchor:[13,13]})}
+function drawRoute(){
+  if(!rt.map)return;rt.group.clearLayers();
+  activeSpots().forEach(function(h){
+    var r=RAD[h.size]||80;
+    L.circle([h.lat,h.lng],{radius:r+60,color:'#d9921a',weight:1,dashArray:'4 4',fillColor:'#d9921a',fillOpacity:.07,interactive:false}).addTo(rt.group);
+    L.circle([h.lat,h.lng],{radius:r,color:'#d23b2e',weight:2,fillColor:'#d23b2e',fillOpacity:.25,interactive:false}).addTo(rt.group);
+  });
+  rt.routes.forEach(function(r,i){
+    if(i===rt.sel)return;
+    L.polyline(r.latlngs,{color:'#6b7f72',weight:5,opacity:.55,dashArray:'2 8',lineCap:'round'}).addTo(rt.group).on('click',function(){rt.sel=i;drawRoute();renderRtOut()});
+  });
+  var s=rt.routes[rt.sel];
+  if(s){
+    L.polyline(s.latlngs,{color:'#fff',weight:10,opacity:.95,lineCap:'round',interactive:false}).addTo(rt.group);
+    s.a.segs.forEach(function(g){L.polyline(g.pts,{color:COL[g.c],weight:6,lineCap:'round',interactive:false}).addTo(rt.group)});
+  }
+  if(rt.A)L.marker([rt.A.lat,rt.A.lng],{icon:abIcon('A')}).addTo(rt.group);
+  if(rt.B)L.marker([rt.B.lat,rt.B.lng],{icon:abIcon('B')}).addTo(rt.group);
+}
+function findAddr(which){
+  var inp=$('rt'+which),q=inp.value.trim(),ul=$('sug'+which);ul.innerHTML='';$('rtErr').textContent='';
+  if(q.length<3){$('rtErr').textContent='Введите улицу и номер дома.';return}
+  ul.innerHTML='<li class="help">Ищем…</li>';
+  jget('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=ru&accept-language=ru&viewbox=39.45,47.38,39.95,47.10&bounded=1&q='+encodeURIComponent(q+' Ростов-на-Дону')).then(function(res){
+    ul.innerHTML='';
+    if(!res.length){ul.innerHTML='<li class="help">Адрес не найден. Попробуйте написать иначе: «Пушкинская, 10».</li>';return}
+    res.forEach(function(r){
+      var li=document.createElement('li'),b=document.createElement('button');b.type='button';b.textContent=r.display_name.split(',').slice(0,4).join(',');
+      b.onclick=function(){var pt={lat:+r.lat,lng:+r.lon,name:b.textContent};rt[which]=pt;ul.innerHTML='';$('sel'+which).textContent='Выбрано: '+pt.name;rt.routes=[];renderRtOut();
+        if(rt.map){drawRoute();rt.map.setView([pt.lat,pt.lng],15)}};
+      li.appendChild(b);ul.appendChild(li)});
+  }).catch(function(){ul.innerHTML='<li class="err">Поиск адреса сейчас недоступен. Проверьте интернет и повторьте.</li>'});
+}
+function buildRoute(){
+  var err=$('rtErr');err.textContent='';
+  if(!rt.A||!rt.B){err.textContent='Найдите оба адреса и выберите их из списка.';return}
+  $('rtGo').disabled=true;$('rtGo').textContent='Строим…';
+  jget('https://routing.openstreetmap.de/routed-foot/route/v1/foot/'+rt.A.lng+','+rt.A.lat+';'+rt.B.lng+','+rt.B.lat+'?overview=full&geometries=geojson&alternatives=true&steps=false').then(function(r){
+    if(!r.routes||!r.routes.length)throw new Error('none');
+    rt.routes=r.routes.slice(0,3).map(function(x){var a=analyze(x.geometry.coordinates);return{a:a,len:a.len,latlngs:x.geometry.coordinates.map(function(c){return[c[1],c[0]]})}});
+    var best=0;rt.routes.forEach(function(x,i){var b=rt.routes[best];if(x.a.score<b.a.score||(x.a.score===b.a.score&&x.len<b.len))best=i});
+    rt.best=best;rt.sel=best;
+    drawRoute();renderRtOut();
+    var all=rt.routes.reduce(function(acc,x){return acc.concat(x.latlngs)},[]);if(rt.map)rt.map.fitBounds(all,{padding:[30,30]});
+  }).catch(function(){rt.routes=[];renderRtOut();err.textContent='Не удалось построить маршрут. Сервис маршрутов временно недоступен, или точка далеко от пешеходных дорог.'})
+  .then(function(){$('rtGo').disabled=false;$('rtGo').textContent='Построить маршрут'});
+}
+function renderRtOut(){
+  var o=$('rtOut');
+  if(!rt.routes.length){o.innerHTML='<p class="help">Зелёный участок: далеко от очагов. Жёлтый: рядом с очагом (до 60 м). Красный: путь идёт через зону очага. Показаны только очаги, которые ещё не убраны.</p>';return}
+  var t=todayInfo(),adv=(t&&t.lv>=2)?'<div class="notice">Сегодня пыльца активна. Даже на зелёном маршруте лучше выбрать более короткий путь и меньше времени проводить на улице.</div>':'';
+  o.innerHTML='<b style="font-size:14px">Варианты пешего пути</b>'+rt.routes.map(function(r,i){
+    var km=(r.len/1000).toFixed(1).replace('.',','),min=Math.max(1,Math.round(r.len/1.35/60));
+    return '<button type="button" class="rcard" data-r="'+i+'" aria-pressed="'+(i===rt.sel)+'"><div><span class="rtag '+r.a.rating+'">'+RTXT[r.a.rating]+'</span>'+(i===rt.best?' <span class="help"><b>Рекомендуем</b></span>':'')+'</div><b>Маршрут '+(i+1)+': '+km+' км, около '+min+' мин пешком</b><span class="help">'+(r.a.red+r.a.yel===0?'Рядом с очагами не проходит.':'Рядом с очагами: '+Math.round(r.a.yel)+' м, через зону очага: '+Math.round(r.a.red)+' м.')+'</span></button>'}).join('')+adv+'<p class="help">Это ориентир по данным жителей, а не гарантия отсутствия пыльцы. Пыльца переносится ветром на сотни метров.</p>';
+  o.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){rt.sel=+b.dataset.r;drawRoute();renderRtOut()}});
+}
+document.querySelectorAll('[data-find]').forEach(function(b){b.onclick=function(){findAddr(b.dataset.find)}});
+['A','B'].forEach(function(w){$('rt'+w).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();findAddr(w)}})});
+$('rtForm').onsubmit=function(e){e.preventDefault();buildRoute()};
+/* ---------- справка ---------- */
+var infoTab='how';
+var INFO={
+ how:function(){return '<div class="prose"><div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><img src="logo.png" alt="" width="64" height="64" style="border-radius:50%;flex:none"><p style="margin:0">Амброзия полыннолистная (<i>Ambrosia artemisiifolia</i>) — однолетний сорняк. Её пыльца — сильный аллерген, поэтому важно находить заросли до цветения.</p></div>'+
+  '<h3>На что смотреть</h3><ul><li><b>Высота.</b> Весной небольшие всходы, к августу куст вырастает до 1,5–2 метров.</li><li><b>Листья.</b> Тёмно-зелёные, дважды перисто-рассечённые («кружевные»). С обеих сторон одного цвета.</li><li><b>Стебель.</b> Прямой, ветвистый, шероховатый, с короткими волосками.</li><li><b>Цветение.</b> На верхушках стеблей тонкие колоски из мелких зеленовато-жёлтых цветков. Они и пылят.</li></ul>'+
+  '<h3>Чем не путать</h3><div class="cmp"><div><b>Амброзия</b>Листья зелёные с обеих сторон, без серебристого оттенка. Куст кажется «кружевным».</div><div><b>Полынь обыкновенная</b>Листья снизу серебристо-белые, сверху тёмно-зелёные. Сильный горьковатый запах.</div></div>'+
+  '<div class="warn">Не уверены? Всё равно отправьте фото: сотрудник проверит и подтвердит. В период цветения не срывайте растение голыми руками, а при выкосе используйте перчатки и маску.</div>'+
+  '<button class="btn p" data-go="report">+ Сообщить об очаге</button></div>'},
+ memo:function(){return '<div class="prose"><h3>В сезон пыления (конец июля – сентябрь)</h3><ul><li>Смотрите прогноз на сайте утром. Хуже всего в сухую ветреную жаркую погоду, лучше после дождя.</li><li>В пик закрывайте окна. Проветривайте после дождя или вечером.</li><li>Вернувшись домой, переодевайтесь, умывайтесь и промывайте нос солевым раствором.</li><li>Бельё сушите в помещении, пыльца оседает на мокрой ткани.</li><li>Чаще делайте влажную уборку. Солнцезащитные очки защищают глаза.</li><li>Планируйте путь через раздел «Маршрут»: обходите очаги.</li></ul>'+
+  '<h3>Лечение</h3><ul><li>Лекарства назначает врач. Лучше прийти к аллергологу до сезона, а не в разгар.</li><li>Если врач назначил антигистаминное средство, не пропускайте приём в дни высокой пыльцы.</li></ul>'+
+  '<div class="warn"><b>Срочно вызывайте скорую (103 или 112)</b>, если появились затруднённое дыхание, удушье, сильный отёк лица или горла.</div>'+
+  '<p class="help">Памятка общая и не заменяет консультацию врача.</p></div>'},
+ cal:function(){
+  var rows=wx?wx.map(function(d){var e=estimateDay(d),dt=new Date(d.date+'T12:00:00');
+   return '<tr><td>'+esc(dt.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short'}))+'</td><td>до '+Math.round(d.wind)+' м/с</td><td>до '+Math.round(d.tmax)+' °C</td><td>'+(d.rain>=0.5?d.rain.toFixed(1)+' мм':'без осадков')+'</td><td><span class="lvl l'+e.lv+'">'+LV[e.lv]+'</span></td></tr>'}).join(''):'';
+  return '<div class="prose"><h3>Сезон амброзии в Ростове-на-Дону</h3><div class="cal"><div><strong>Апрель – май</strong><span>Всходы. Растения маленькие, их легко выпалывать.</span></div><div><strong>Июнь – июль</strong><span>Быстрый рост. Лучшее время для выкоса: до цветения.</span></div><div><strong>Конец июля – сентябрь</strong><span>Цветение и пыление. Пик чаще в августе, в жаркие годы возможен уже в конце июля.</span></div><div><strong>Сентябрь – октябрь</strong><span>Созревают семена, пыльцы становится меньше.</span></div><div><strong>Ноябрь – март</strong><span>Покой. Семена остаются в почве и прорастут весной.</span></div></div><p class="help">Сроки ориентировочные, зависят от погоды года.</p>'+
+  '<h3>Прогноз на ближайшие дни</h3>'+(rows?'<div class="table-wrap"><table><thead><tr><th>День</th><th>Ветер</th><th>Температура</th><th>Осадки</th><th>Пыльца</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="help">Уровень пыльцы: оценка проекта по погоде в сезон, либо данные CAMS через Open-Meteo, если они есть. Это не измерение. Вне сезона пыльцы амброзии почти нет.</p>':'<p class="help">Прогноз сейчас недоступен. Проверьте интернет.</p>')+'</div>'}
+};
+function renderInfo(){
+  var tabs=[['how','Как отличить амброзию'],['memo','Памятка аллергику'],['cal','Календарь и прогноз']],b=$('subtabs');b.innerHTML='';
+  tabs.forEach(function(t){var e=document.createElement('button');e.type='button';e.className='chip';e.textContent=t[1];e.setAttribute('role','tab');e.setAttribute('aria-pressed',String(infoTab===t[0]));e.onclick=function(){infoTab=t[0];renderInfo()};b.appendChild(e)});
+  $('infoBox').innerHTML=INFO[infoTab]();
+}
 /* ---------- навигация ---------- */
-function renderAll(){stats();chips();drawMap();renderSide();if(view==='mine')renderMine();if(view==='cabinet')renderCabinet()}
+function renderAll(){stats();chips();drawMap();renderSide();renderPollen();if(rt.map)drawRoute();if(view==='info')renderInfo();if(view==='mine')renderMine();if(view==='cabinet')renderCabinet()}
 function go(v){
   view=v;document.querySelectorAll('.view').forEach(function(e){e.classList.toggle('on',e.id==='v-'+v)});
   document.querySelectorAll('[data-go]').forEach(function(b){if(b.classList.contains('tab')||b.closest('.mobnav')){if(b.dataset.go===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}});
   if(v==='report'){initPick();setTimeout(function(){if(pick)pick.invalidateSize()},60)}
   if(v==='map')setTimeout(function(){if(map)map.invalidateSize()},60);
+  if(v==='route'){initRouteMap();setTimeout(function(){if(rt.map)rt.map.invalidateSize()},60);renderRtOut()}
+  if(v==='info')renderInfo();
   if(v==='mine')renderMine();
   if(v==='cabinet')renderCabinet();
   if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
   window.scrollTo(0,0);
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go)}});
-window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(['map','report','mine','cabinet'].indexOf(h)>-1&&h!==view)go(h)});
+window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(['map','report','mine','cabinet','route','info'].indexOf(h)>-1&&h!==view)go(h)});
 
 /* ---------- запуск ---------- */
 if(!LIVE){var n=$('demoNote');n.hidden=false;n.textContent='Демо-режим: отметки хранятся только в этом браузере, пять примеров на карте придуманы для показа. Общая база подключается в файле config.js.'}
 initMap();
-(LIVE?sb.auth.getSession().then(function(r){session=r.data&&r.data.session}):Promise.resolve()).then(load).then(function(){
-  var h=location.hash.slice(1);renderAll();go(['map','report','mine','cabinet'].indexOf(h)>-1?h:'map');
+(LIVE?sb.auth.getSession().then(function(r){session=r.data&&r.data.session}):Promise.resolve()).then(function(){return Promise.all([load(),loadWeather(),loadOverride()])}).then(function(){
+  var h=location.hash.slice(1);renderAll();go(['map','report','mine','cabinet','route','info'].indexOf(h)>-1?h:'map');
   var top=function(){window.scrollTo(0,0)};top();requestAnimationFrame(top);setTimeout(top,400);
 });
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});
