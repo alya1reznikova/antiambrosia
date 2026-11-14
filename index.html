@@ -136,7 +136,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
 .cal{display:grid;gap:8px;margin:10px 0}
 .cal div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:8px}
 .cal strong{font-size:14px}
-.pfig{margin:6px 0 8px}.pfig img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block}.pfig figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.pfig{margin:6px 0 8px}.pfig img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;display:block}
+.pfig.wide{max-width:420px;margin:12px 0}.pfig.wide img{aspect-ratio:auto;object-fit:contain;background:#fff;border:1px solid var(--line)}.pfig figcaption{font-size:12px;color:var(--muted);margin-top:4px}
 .key{background:var(--green-soft);border-left:4px solid var(--green);border-radius:8px;padding:12px 14px;font-weight:600;margin:10px 0 4px}
 .linkbtn{background:none;border:0;color:var(--green);text-decoration:underline;padding:0}
 @media (max-width:820px){
@@ -641,14 +642,14 @@ $('rtForm').onsubmit=function(e){e.preventDefault();buildRoute()};
 /* ---------- справка ---------- */
 var infoTab='how';
 /* Подписи авторов фото (файлы лежат в папке photos). Пример: {'ambrosia.jpg':'Имя автора, лицензия CC BY-SA 4.0, Wikimedia Commons'} */
-var PHOTO_CREDIT={'ambrosia.jpg':'','polyn.jpg':''};
+var PHOTO_CREDIT={'ambrosia.jpg':'','polyn.jpg':'','flora.jpg':'Flora Batava, том 20 (иллюстрация XIX века, общественное достояние)'};
 var INFO={
  how:function(){
-  function fig(file,cap){return '<figure class="pfig" hidden><img src="photos/'+file+'" alt="'+esc(cap)+'"><figcaption>'+esc(cap)+(PHOTO_CREDIT[file]?'. Фото: '+esc(PHOTO_CREDIT[file]):'')+'</figcaption></figure>'}
+  function fig(file,cap,cls){return '<figure class="pfig'+(cls?' '+cls:'')+'" hidden><img src="photos/'+file+'" alt="'+esc(cap)+'"><figcaption>'+esc(cap)+(PHOTO_CREDIT[file]?'. Источник: '+esc(PHOTO_CREDIT[file]):'')+'</figcaption></figure>'}
   return '<div class="prose"><div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><img src="logo.png" alt="" width="64" height="64" style="border-radius:50%;flex:none"><p style="margin:0">Амброзия полыннолистная (<i>Ambrosia artemisiifolia</i>) — однолетний сорняк. Её пыльца — сильный аллерген, поэтому заросли важно находить до цветения.</p></div>'+
   '<h3>Как выглядит амброзия</h3><ul><li><b>Высота.</b> Весной всходы совсем маленькие, к августу куст вырастает до 1,5–2 метров.</li><li><b>Листья.</b> Тёмно-зелёные, дважды перисто-рассечённые («кружевные»), с обеих сторон одного цвета.</li><li><b>Стебель.</b> Прямой, ветвистый, шероховатый, с короткими волосками.</li><li><b>Цветение.</b> На верхушках стеблей тонкие колоски из мелких зеленовато-жёлтых цветков. Именно они пылят.</li></ul>'+
-  '<h3>Амброзия или полынь?</h3><p>Их часто принимают друг за друга: листья похожи по форме. Запомните одно правило.</p><div class="key">Низ листа зелёный — это амброзия. Низ листа серебристо-белый — это полынь.</div>'+
-  '<div class="cmp"><div><b>Амброзия</b>'+fig('ambrosia.jpg','Амброзия полыннолистная')+'Лист зелёный с обеих сторон, без серебристого оттенка. Куст выглядит «кружевным».</div><div><b>Полынь обыкновенная</b>'+fig('polyn.jpg','Полынь обыкновенная')+'Сверху лист тёмно-зелёный, снизу серебристо-белый. Сильный горьковатый запах.</div></div>'+
+  fig('flora.jpg','Строение амброзии: стебель, листья, соцветия и цветки крупно. Ботаническая иллюстрация','wide')+'<h3>Амброзия или полынь?</h3><p>Их часто принимают друг за друга: листья похожи по форме. Запомните одно правило.</p><div class="key">Низ листа зелёный — это амброзия. Низ листа серебристо-белый — это полынь.</div>'+
+  '<div class="cmp"><div><b>Амброзия</b>'+fig('ambrosia.jpg','Амброзия: соцветия-колоски из зеленовато-жёлтых цветков')+'Лист зелёный с обеих сторон, без серебристого оттенка. Куст выглядит «кружевным».</div><div><b>Полынь обыкновенная</b>'+fig('polyn.jpg','Полынь обыкновенная: серовато-зелёные листья, мелкие беловатые соцветия')+'Сверху лист тёмно-зелёный, снизу серебристо-белый. Сильный горьковатый запах.</div></div>'+
   '<div class="warn">Не уверены? Всё равно отправьте фото: сотрудник проверит и подтвердит. В период цветения не срывайте растение голыми руками, а при выкосе используйте перчатки и маску.</div>'+
   '<button class="btn p" data-go="report">+ Сообщить об очаге</button></div>'},
  memo:function(){return '<div class="prose"><h3>В сезон пыления (конец июля – сентябрь)</h3><ul><li>Смотрите прогноз на сайте утром. Хуже всего в сухую ветреную жаркую погоду, лучше после дождя.</li><li>В пик закрывайте окна. Проветривайте после дождя или вечером.</li><li>Вернувшись домой, переодевайтесь, умывайтесь и промывайте нос солевым раствором.</li><li>Бельё сушите в помещении, пыльца оседает на мокрой ткани.</li><li>Чаще делайте влажную уборку. Солнцезащитные очки защищают глаза.</li><li>Планируйте путь через раздел «Маршрут»: обходите очаги.</li></ul>'+
