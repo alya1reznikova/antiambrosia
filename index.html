@@ -104,7 +104,7 @@ td.act{white-space:nowrap}td.act .btn{padding:7px 12px;font-size:13px;margin:2px
 footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90px}
 .pin{width:28px;height:34px;border:3px solid #fff;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);box-shadow:0 3px 9px #0004;display:grid;place-items:center;background:var(--pc)}
 .pin span{display:block;width:7px;height:7px;background:#fff;border-radius:50%;transform:rotate(45deg)}
-.pin.red{--pc:#d23b2e}.pin.amber{--pc:#d9921a}.pin.green{--pc:#1f9a55}
+.pin.gray{--pc:#6b7f72}.pin.red{--pc:#d23b2e}.pin.amber{--pc:#d9921a}.pin.green{--pc:#1f9a55}
 .leaflet-container{font-family:var(--f-b)}
 .pbox{border-radius:14px;padding:12px 16px;margin-bottom:14px;border:1px solid var(--pc-line);background:var(--pc-bg);color:var(--ink)}
 .pbox b{display:block;font:600 15px/1.3 var(--f-h);margin-bottom:4px}
@@ -174,7 +174,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
  <!-- КАРТА -->
  <section id="v-map" class="view on">
   <div class="hero">
-   <div><div class="eyebrow">Ростов-на-Дону</div><h1>Карта очагов амброзии</h1><p class="lead">Увидели заросли амброзии? Отметьте их на карте. Мы проверим и передадим заявку на выкос в управляющую компанию или ТСЖ.</p></div>
+   <div><div class="eyebrow">Ростовская область</div><h1>Карта очагов амброзии</h1><p class="lead">Увидели заросли амброзии? Отметьте их на карте. Мы проверим и передадим заявку на выкос в управляющую компанию или ТСЖ.</p></div>
    <div class="stats" aria-live="polite">
     <div class="stat r"><b id="sR">0</b><span>очагов</span></div>
     <div class="stat a"><b id="sA">0</b><span>в работе</span></div>
@@ -185,14 +185,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
   <div id="demoNote" class="notice" hidden style="margin-bottom:12px"></div>
   <div class="layout">
    <section class="card" aria-label="Карта">
-    <div class="card-h"><div><h2>Очаги на карте</h2><div class="sub">Цветной круг показывает примерный размер зарослей</div></div>
+    <div class="card-h"><div><h2>Очаги на карте</h2><div class="sub">Круг показывает примерный размер зарослей, контур обведён жителем</div></div>
      <div class="chips" id="chips" role="group" aria-label="Фильтр"></div></div>
     <div id="map" role="application" aria-label="Карта Ростова-на-Дону с очагами амброзии"></div>
     <div class="legend">
      <span><i style="background:var(--red)"></i>Опасно</span>
      <span><i style="background:var(--amber)"></i>В работе</span>
      <span><i style="background:var(--ok)"></i>Устранено</span>
-     <span>Пунктир: ждёт проверки</span>
+     <span>Пунктир: ждёт проверки</span><span>Серый: без фото, не проверен</span>
      <span style="margin-left:auto"><button class="btn" id="locBtn" type="button" style="padding:5px 12px;font-size:13px">Где я?</button></span>
     </div>
    </section>
@@ -204,15 +204,17 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 16px 90p
  <section id="v-report" class="view">
   <div class="card page"><div class="pad">
    <div class="eyebrow">Новая заявка</div><h1 style="font-size:24px">Сообщить об очаге</h1>
-   <p class="lead" style="margin-bottom:16px">Нажмите на карте место, где растёт амброзия, и добавьте фото. Сотрудник проверит заявку до того, как она станет «опасной».</p>
+   <p class="lead" style="margin-bottom:16px">Нажмите на карте место, где растёт амброзия, и по возможности добавьте фото. Заявки принимаются по Ростовской области. Сотрудник проверит заявку до того, как она станет «опасной».</p>
    <form class="form" id="form" novalidate>
     <div><b style="font-size:14px">1. Место на карте</b>
      <div id="pickmap" style="margin-top:8px" role="application" aria-label="Выберите место на карте"></div>
-     <div class="row2" style="margin-top:8px"><button class="btn" type="button" id="gps">Определить моё местоположение</button><div class="help" id="pickInfo" style="align-self:center">Точка не выбрана</div></div>
+     <div class="row2" style="margin-top:8px"><button class="btn" type="button" id="gps">Определить моё местоположение</button><button class="btn" type="button" id="drawBtn">Обвести заросли контуром</button></div>
+     <div class="help" id="pickInfo" style="margin-top:6px">Точка не выбрана. Нажмите на карту. Если заросли большие, можно обвести их контуром (по желанию).</div>
+     <button class="btn" type="button" id="drawClr" style="margin-top:6px" hidden>Сбросить контур</button>
     </div>
-    <div class="upload"><b style="font-size:14px">2. Фото растения</b>
+    <div class="upload"><b style="font-size:14px">2. Фото растения (по желанию)</b>
      <input type="file" id="photo" accept="image/*" aria-label="Фото растения"><img id="prev" class="photo" alt="Предпросмотр фото" hidden>
-     <span class="help">Снимите куст целиком. По фото сотрудник проверит, что это амброзия.</span></div>
+     <span class="help">Снимите куст целиком: так заявку проверят быстрее. Без фото она тоже примется, но будет отмечена как «не проверено», и на карте такой очаг серый.</span></div>
     <div class="row2">
      <label class="f">Где растёт<select id="place"><option>Двор многоквартирного дома</option><option>Пустырь</option><option>Обочина дороги</option><option>Территория школы или детсада</option><option>Частный сектор</option><option>Другое</option></select></label>
      <label class="f">Размер зарослей<select id="size"><option value="s">Небольшой (до 1 м²)</option><option value="m" selected>Средний (1–10 м²)</option><option value="l">Большой (больше 10 м²)</option></select></label>
@@ -298,6 +300,44 @@ var LIVE=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
 var sb=LIVE?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 var CENTER=[47.2357,39.7015];
 var STATUS={pending:'На проверке',work:'Передано в работу',done:'Устранено',rejected:'Отклонено'};
+var OBL=[[46.05,38.2],[50.25,44.4]]; /* Ростовская область (прямоугольник) */
+var RB=30; /* запас вокруг контура зарослей, м */
+function inObl(lat,lng){return lat>=OBL[0][0]&&lat<=OBL[1][0]&&lng>=OBL[0][1]&&lng<=OBL[1][1]}
+function mapOpts(o){o=o||{};o.maxBounds=OBL;o.maxBoundsViscosity=1;o.minZoom=7;return o}
+function cleanShape(s){
+  if(typeof s==='string'){try{s=JSON.parse(s)}catch(e){return null}}
+  if(!Array.isArray(s)||s.length<3||s.length>30)return null;
+  var o=[];for(var i=0;i<s.length;i++){var p=s[i];if(!Array.isArray(p)||typeof p[0]!=='number'||typeof p[1]!=='number'||!inObl(p[0],p[1]))return null;o.push([p[0],p[1]])}
+  return o;
+}
+function xyOf(p,lat0){return[p[1]*Math.cos(lat0*Math.PI/180)*111320,p[0]*111320]}
+function shapeCenter(sh){var a=0,b=0;sh.forEach(function(p){a+=p[0];b+=p[1]});return[a/sh.length,b/sh.length]}
+function shapeArea(sh){var xy=sh.map(function(p){return xyOf(p,sh[0][0])}),a=0,n=xy.length;for(var i=0;i<n;i++){var j=(i+1)%n;a+=xy[i][0]*xy[j][1]-xy[j][0]*xy[i][1]}return Math.abs(a)/2}
+function distToShape(p,sh){
+  var xy=sh.map(function(q){return xyOf(q,p[0])}),q=xyOf(p,p[0]),n=xy.length,inside=false,best=1e12,i,j;
+  for(i=0,j=n-1;i<n;j=i++){
+    var a=xy[i],b=xy[j];
+    if((a[1]>q[1])!==(b[1]>q[1])&&q[0]<(b[0]-a[0])*(q[1]-a[1])/(b[1]-a[1])+a[0])inside=!inside;
+    var dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=l2?Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dy)/l2)):0,ex=a[0]+t*dx-q[0],ey=a[1]+t*dy-q[1];
+    best=Math.min(best,Math.sqrt(ex*ex+ey*ey));
+  }
+  return inside?0:best;
+}
+function offsetPoly(sh,d){
+  var k=Math.cos(sh[0][0]*Math.PI/180),xy=sh.map(function(p){return[p[1]*k*111320,p[0]*111320]}),n=xy.length,ar=0,i;
+  for(i=0;i<n;i++){var j=(i+1)%n;ar+=xy[i][0]*xy[j][1]-xy[j][0]*xy[i][1]}
+  var sg=ar>0?1:-1;
+  function nrm(u,v){var dx=v[0]-u[0],dy=v[1]-u[1],l=Math.sqrt(dx*dx+dy*dy)||1;return[sg*dy/l,-sg*dx/l]}
+  return xy.map(function(c,i){
+    var a=xy[(i+n-1)%n],b=xy[(i+1)%n],n1=nrm(a,c),n2=nrm(c,b),bx=n1[0]+n2[0],by=n1[1]+n2[1],bl=Math.sqrt(bx*bx+by*by)||1;bx/=bl;by/=bl;
+    var cs=Math.max(.4,bx*n1[0]+by*n1[1]);
+    return[(c[1]+by*d/cs)/111320,(c[0]+bx*d/cs)/(111320*k)];
+  });
+}
+function hsCenter(h){return h.shape?shapeCenter(h.shape):[h.lat,h.lng]}
+function hsRad(h){if(!h.shape)return RAD[h.size]||80;var c=shapeCenter(h.shape),m=0;h.shape.forEach(function(p){m=Math.max(m,hav(c,p))});return m+RB}
+/* расстояние от точки до края красной зоны: <=0 значит внутри */
+function zd(p,h){return h.shape?distToShape(p,h.shape)-RB:hav(p,[h.lat,h.lng])-(RAD[h.size]||80)}
 var RAD={s:40,m:80,l:130}, SIZENAME={s:'Небольшой (до 1 м²)',m:'Средний (1–10 м²)',l:'Большой (больше 10 м²)'};
 var items=[], filter='all', selId=null, view='map';
 var map=null, layers={}, pick=null, pickMarker=null, pickPt=null, photoBlob=null, session=null;
@@ -330,7 +370,7 @@ function load(){
   if(!LIVE){items=demoLoad();return Promise.resolve()}
   return sb.from('reports').select('*').order('created_at',{ascending:false}).then(function(r){
     if(r.error){toast('Не удалось загрузить данные. Проверьте интернет.');return}
-    items=r.data||[];
+    items=(r.data||[]).map(function(x){x.shape=cleanShape(x.shape);return x});
   });
 }
 function uploadPhoto(blob,tag){
@@ -360,7 +400,7 @@ function tiles(m){
 }
 function initMap(){
   if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">Карта не загрузилась. Проверьте интернет и обновите страницу.</div>';return}
-  map=L.map('map',{zoomControl:true,keyboard:false}).setView(CENTER,13);tiles(map);
+  map=L.map('map',mapOpts({zoomControl:true,keyboard:false})).setView(CENTER,13);tiles(map);
   map.on('moveend',function(){});
 }
 function drawMap(){
@@ -369,10 +409,16 @@ function drawMap(){
   items.forEach(function(x){
     if(x.status==='rejected')return;
     var c=color(x);if(filter!=='all'&&filter!==c)return;
-    var pal={red:'#d23b2e',amber:'#d9921a',green:'#1f9a55'}[c];
-    var g=L.layerGroup();
-    L.circle([x.lat,x.lng],{radius:RAD[x.size]||80,color:pal,weight:2,dashArray:x.status==='pending'?'6 6':null,fillColor:pal,fillOpacity:x.status==='pending'?.12:.28}).addTo(g).on('click',function(){select(x.id)});
-    L.marker([x.lat,x.lng],{icon:L.divIcon({className:'',html:'<div class="pin '+c+'"><span></span></div>',iconSize:[28,34],iconAnchor:[14,30]}),title:x.address||STATUS[x.status],keyboard:true}).addTo(g).on('click',function(){select(x.id)});
+    var nop=x.status==='pending'&&!(safeUrl(x.photo_url)||safeUrl(x.photo));
+    var pal=nop?'#6b7f72':{red:'#d23b2e',amber:'#d9921a',green:'#1f9a55'}[c];
+    var g=L.layerGroup(),dash=x.status==='pending'?'6 6':null,fo=x.status==='pending'?.12:.28,onSel=function(){select(x.id)};
+    if(x.shape){
+      L.polygon(offsetPoly(x.shape,RB),{color:pal,weight:1,dashArray:'4 4',fillColor:pal,fillOpacity:fo*.5}).addTo(g).on('click',onSel);
+      L.polygon(x.shape,{color:pal,weight:2,dashArray:dash,fillColor:pal,fillOpacity:fo+.12}).addTo(g).on('click',onSel);
+    }else{
+      L.circle([x.lat,x.lng],{radius:RAD[x.size]||80,color:pal,weight:2,dashArray:dash,fillColor:pal,fillOpacity:fo}).addTo(g).on('click',onSel);
+    }
+    L.marker([x.lat,x.lng],{icon:L.divIcon({className:'',html:'<div class="pin '+(nop?'gray':c)+'"><span></span></div>',iconSize:[28,34],iconAnchor:[14,30]}),title:x.address||STATUS[x.status],keyboard:true}).addTo(g).on('click',onSel);
     g.addTo(map);layers[x.id]=g;
   });
 }
@@ -402,9 +448,10 @@ function renderSide(){
   var ph=safeUrl(x.photo_url)||safeUrl(x.photo),af=safeUrl(x.after_url);
   s.innerHTML='<div><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></div>'+
    (ph?'<img class="photo" src="'+esc(ph)+'" alt="Фото очага">':'<div class="nophoto">Фото не добавлено</div>')+
+   (!ph&&x.status==='pending'?'<div class="notice">Без фото: заявка ещё не проверена. Сотрудник проверит очаг на месте.</div>':'')+
    (af?'<div class="help">Фото после уборки</div><img class="photo" src="'+esc(af)+'" alt="Фото после уборки">':'')+
    timeline(x)+
-   '<dl class="kv"><dt>Адрес</dt><dd>'+esc(x.address||'не указан')+'</dd><dt>Место</dt><dd>'+esc(x.place||'')+'</dd><dt>Размер</dt><dd>'+esc(SIZENAME[x.size]||'')+'</dd><dt>Дата</dt><dd>'+esc(fdate(x.created_at))+'</dd>'+(x.comment?'<dt>Комментарий</dt><dd>'+esc(x.comment)+'</dd>':'')+'</dl>'+
+   '<dl class="kv"><dt>Адрес</dt><dd>'+esc(x.address||'не указан')+'</dd><dt>Место</dt><dd>'+esc(x.place||'')+'</dd><dt>Размер</dt><dd>'+esc(SIZENAME[x.size]||'')+'</dd>'+(x.shape?'<dt>Зона</dt><dd>Контур обведён жителем, около '+Math.max(1,Math.round(shapeArea(x.shape)))+' м²</dd>':'')+'<dt>Дата</dt><dd>'+esc(fdate(x.created_at))+'</dd>'+(x.comment?'<dt>Комментарий</dt><dd>'+esc(x.comment)+'</dd>':'')+'</dl>'+
    (x.demo?'<div class="demo">Демонстрационный пример</div>':'')+
    '<button class="btn block" data-go="report">+ Сообщить о другом очаге</button>';
 }
@@ -415,17 +462,52 @@ function geolocate(cb){
 $('locBtn').onclick=function(){geolocate(function(ll){if(map){map.setView(ll,16);L.circleMarker(ll,{radius:8,color:'#1f6fd1',fillColor:'#1f6fd1',fillOpacity:.9}).addTo(map)}})};
 
 /* ---------- форма ---------- */
+var drawing=false,shapePts=[],shapeLayer=null,vtx=[],shapeDone=false;
+function drawUi(){
+  var b=$('drawBtn'),c=$('drawClr');
+  b.textContent=drawing?'Готово, контур обведён':'Обвести заросли контуром';
+  c.hidden=!(shapePts.length||shapeDone);
+  if(shapeLayer){pick.removeLayer(shapeLayer);shapeLayer=null}
+  vtx.forEach(function(m){pick.removeLayer(m)});vtx=[];
+  shapePts.forEach(function(p){vtx.push(L.circleMarker(p,{radius:5,color:'#fff',weight:2,fillColor:'#1f9a55',fillOpacity:1,interactive:false}).addTo(pick))});
+  if(shapePts.length>=3)shapeLayer=L.polygon(shapePts,{color:'#1f9a55',weight:2,fillOpacity:.25,interactive:false}).addTo(pick);
+  else if(shapePts.length===2)shapeLayer=L.polyline(shapePts,{color:'#1f9a55',weight:2,interactive:false}).addTo(pick);
+  if(drawing)$('pickInfo').textContent='Нажимайте на карте по границе зарослей. Точек: '+shapePts.length+' (нужно минимум 3). Потом нажмите «Готово».';
+}
+function addVertex(ll){
+  if(shapePts.length>=30){toast('Достаточно 30 точек. Нажмите «Готово».');return}
+  if(!inObl(ll.lat,ll.lng)){toast('Заявки принимаются только по Ростовской области.');return}
+  shapePts.push([ll.lat,ll.lng]);drawUi();
+}
+function finishShape(){
+  if(shapePts.length<3){$('ferr').textContent='Для контура нужно минимум 3 точки. Добавьте точки или нажмите «Сбросить контур».';return false}
+  var c=shapeCenter(shapePts),m=0;shapePts.forEach(function(p){m=Math.max(m,hav(c,p))});
+  if(m>150){$('ferr').textContent='Контур слишком большой. Разделите заросли на несколько заявок.';return false}
+  $('ferr').textContent='';drawing=false;shapeDone=true;
+  var a=shapeArea(shapePts);$('size').value=a<=1?'s':a<=10?'m':'l';
+  setPick(c);drawUi();
+  $('pickInfo').textContent='Контур обведён: около '+Math.max(1,Math.round(a))+' м². Размер выбран автоматически, его можно изменить.';
+  return true;
+}
+function resetShape(){drawing=false;shapeDone=false;shapePts=[];if(pick)drawUi();else{$('drawClr').hidden=true;$('drawBtn').textContent='Обвести заросли контуром'}}
 function setPick(ll){
   pickPt={lat:ll.lat!=null?ll.lat:ll[0],lng:ll.lng!=null?ll.lng:ll[1]};
+  if(!inObl(pickPt.lat,pickPt.lng)){pickPt=null;toast('Заявки принимаются только по Ростовской области.');return}
   if(pickMarker)pick.removeLayer(pickMarker);
-  pickMarker=L.marker([pickPt.lat,pickPt.lng]).addTo(pick);
+  pickMarker=L.marker([pickPt.lat,pickPt.lng],{interactive:false}).addTo(pick);
   $('pickInfo').textContent='Точка выбрана: '+pickPt.lat.toFixed(5)+', '+pickPt.lng.toFixed(5);
 }
 function initPick(){
   if(pick||typeof L==='undefined')return;
-  pick=L.map('pickmap').setView(CENTER,13);tiles(pick);
-  pick.on('click',function(e){setPick(e.latlng)});
+  pick=L.map('pickmap',mapOpts()).setView(CENTER,13);tiles(pick);
+  pick.on('click',function(e){if(drawing)addVertex(e.latlng);else setPick(e.latlng)});
 }
+$('drawBtn').onclick=function(){
+  initPick();
+  if(!drawing){drawing=true;shapeDone=false;shapePts=[];pickPt=null;if(pickMarker){pick.removeLayer(pickMarker);pickMarker=null}drawUi()}
+  else finishShape();
+};
+$('drawClr').onclick=function(){resetShape();$('pickInfo').textContent='Контур сброшен. Нажмите на карту, чтобы выбрать точку.'};
 $('gps').onclick=function(){geolocate(function(ll){initPick();pick.setView(ll,17);setPick(ll)})};
 $('photo').onchange=function(){
   var f=this.files&&this.files[0];photoBlob=null;$('prev').hidden=true;if(!f)return;
@@ -434,17 +516,19 @@ $('photo').onchange=function(){
 var sending=false;
 $('form').onsubmit=function(e){
   e.preventDefault();if(sending)return;var err=$('ferr');err.textContent='';
+  if(drawing&&!finishShape())return;
   if(!pickPt){err.textContent='Нажмите на карте место, где растёт амброзия.';return}
-  if(!photoBlob){err.textContent='Добавьте фото растения.';return}
+  if(!inObl(pickPt.lat,pickPt.lng)){err.textContent='Заявки принимаются только по Ростовской области.';return}
   sending=true;$('send').disabled=true;$('send').textContent='Отправляем…';
   uploadPhoto(photoBlob,'before').then(function(url){
     var rec={lat:pickPt.lat,lng:pickPt.lng,address:$('addr').value.trim().slice(0,120),place:$('place').value,size:$('size').value,comment:$('comment').value.trim().slice(0,300),status:'pending',photo_url:url,demo:false};
+    if(shapeDone&&shapePts.length>=3)rec.shape=shapePts.map(function(p){return[+p[0].toFixed(6),+p[1].toFixed(6)]});
     if(LIVE)return sb.from('reports').insert(rec).select().then(function(r){if(r.error)throw r.error;return r.data[0]});
     rec.id='l'+Date.now();rec.created_at=new Date().toISOString();items.unshift(rec);demoSave();return rec;
   }).then(function(rec){
     addMine(rec.id);return load().then(function(){return rec});
   }).then(function(rec){
-    $('form').reset();$('prev').hidden=true;photoBlob=null;pickPt=null;if(pickMarker){pick.removeLayer(pickMarker);pickMarker=null}$('pickInfo').textContent='Точка не выбрана';
+    $('form').reset();$('prev').hidden=true;photoBlob=null;pickPt=null;if(pickMarker){pick.removeLayer(pickMarker);pickMarker=null}resetShape();$('pickInfo').textContent='Точка не выбрана';
     toast('Заявка отправлена на проверку.');selId=rec.id;go('mine');
   }).catch(function(x){err.textContent='Не удалось отправить заявку. Проверьте интернет и попробуйте ещё раз.';console.error(x)}).then(function(){sending=false;$('send').disabled=false;$('send').textContent='Отправить на проверку'});
 };
@@ -456,7 +540,7 @@ function renderMine(){
   if(!list.length){b.innerHTML='<div class="empty"><b>Пока нет заявок</b><p>Отметьте очаг на карте, и он появится здесь со статусом.</p><button class="btn p" data-go="report">Сообщить об очаге</button></div>';return}
   b.innerHTML='<div class="table-wrap"><table><thead><tr><th>Фото</th><th>Адрес</th><th>Дата</th><th>Статус</th></tr></thead><tbody>'+list.map(function(x){
     var ph=safeUrl(x.photo_url)||safeUrl(x.photo);
-    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span><div style="margin-top:6px">'+(x.status==='rejected'?'':timeline(x))+'</div></td></tr>'}).join('')+'</tbody></table></div>';
+    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'<span class="help">Без фото</span>')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span><div style="margin-top:6px">'+(x.status==='rejected'?'':timeline(x))+'</div></td></tr>'}).join('')+'</tbody></table></div>';
 }
 
 /* ---------- кабинет ---------- */
@@ -479,10 +563,11 @@ function renderCabinet(){
   '<div class="pad"><b style="font-size:14px">Уровень пыльцы на сегодня (для плашки на сайте)</b><div class="row2" style="margin-top:8px"><label class="f">Уровень<select id="pLv"><option value="">Авто, по погоде</option>'+LV.map(function(n,i){return '<option value="'+i+'"'+(ov&&ov.level===i?' selected':'')+'>'+n+'</option>'}).join('')+'</select></label><label class="f">Источник или комментарий<input type="text" id="pNote" maxlength="100" placeholder="Например: по данным Pollen Club" value="'+esc(ov&&ov.note||'')+'"></label></div><button class="btn" id="pSave" type="button" style="margin-top:8px">Сохранить уровень</button> <span class="help">Действует 36 часов, потом снова авто.</span></div>'+
   '<div class="table-wrap"><table><thead><tr><th>Фото</th><th>Адрес</th><th>Размер</th><th>Дата</th><th>Статус</th><th>Действие</th></tr></thead><tbody>'+list.map(function(x){
     var ph=safeUrl(x.photo_url)||safeUrl(x.photo),act='';
-    if(x.status==='pending')act='<button class="btn p" data-act="work" data-id="'+esc(x.id)+'">Подтвердить и передать в работу</button><button class="btn d" data-act="rejected" data-id="'+esc(x.id)+'">Не амброзия</button>';
-    else if(x.status==='work')act='<label class="btn p" style="cursor:pointer;margin:2px 0">Отметить устранённым<input type="file" accept="image/*" hidden data-done="'+esc(x.id)+'"></label><div class="help">Можно приложить фото после уборки</div>';
-    else act='<span class="help">Завершено</span>';
-    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(SIZENAME[x.size]||'')+'</td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></td><td class="act">'+act+'</td></tr>'}).join('')+'</tbody></table></div>';
+    if(x.status==='pending')act='<button class="btn p" data-act="work" data-id="'+esc(x.id)+'">Подтвердить и передать в работу</button><button class="btn d" data-act="rejected" data-id="'+esc(x.id)+'">Не амброзия</button>'+(ph?'':'<div class="help">Без фото: не проверено, проверьте на месте</div>');
+    else if(x.status==='work')act='<label class="btn p" style="cursor:pointer;margin:2px 0">Отметить устранённым<input type="file" accept="image/*" hidden data-done="'+esc(x.id)+'"></label><div class="help">Можно приложить фото после уборки</div><button class="btn" style="margin:2px 0" data-act="pending" data-id="'+esc(x.id)+'">Вернуть на проверку</button>';
+    else if(x.status==='done')act='<span class="help">Завершено</span><br><button class="btn" style="margin:2px 0" data-act="work" data-id="'+esc(x.id)+'">Вернуть в работу</button>';
+    else act='<span class="help">Отклонено</span><br><button class="btn" style="margin:2px 0" data-act="pending" data-id="'+esc(x.id)+'">Вернуть на проверку</button>';
+    return '<tr><td>'+(ph?'<img class="thumb" src="'+esc(ph)+'" alt="">':'<span class="help">Без фото</span>')+'</td><td>'+esc(x.address||'без адреса')+'<br><span class="help">'+esc(x.place||'')+'</span></td><td>'+esc(SIZENAME[x.size]||'')+(x.shape?'<br><span class="help">контур</span>':'')+'</td><td>'+esc(fdate(x.created_at))+'</td><td><span class="badge st-'+x.status+'">'+esc(STATUS[x.status])+'</span></td><td class="act">'+act+'</td></tr>'}).join('')+'</tbody></table></div>';
   $('pSave').onclick=function(){saveOverride($('pLv').value,$('pNote').value.trim().slice(0,100)).then(function(){renderPollen();toast('Уровень пыльцы сохранён.')}).catch(function(){toast('Не удалось сохранить. Войдите в кабинет заново.')})};
   b.querySelectorAll('[data-act]').forEach(function(e){e.onclick=function(){setStatus(e.dataset.id,e.dataset.act)}});
   b.querySelectorAll('[data-done]').forEach(function(e){e.onchange=function(){
@@ -491,9 +576,9 @@ function renderCabinet(){
 }
 function setStatus(id,st,afterUrl){
   var p;
-  if(LIVE){var patch={status:st};if(afterUrl)patch.after_url=afterUrl;p=sb.from('reports').update(patch).eq('id',id).then(function(r){if(r.error)throw r.error})}
-  else{var x=items.filter(function(i){return i.id===id})[0];if(x){x.status=st;if(afterUrl)x.after_url=afterUrl;demoSave()}p=Promise.resolve()}
-  p.then(function(){return load()}).then(function(){toast(st==='work'?'Заявка передана в работу.':st==='done'?'Отмечено как устранённое.':'Заявка отклонена.');renderAll()}).catch(function(){toast('Не удалось изменить статус. Войдите в кабинет заново.')});
+  if(LIVE){var patch={status:st};if(afterUrl)patch.after_url=afterUrl;else if(st!=='done')patch.after_url=null;p=sb.from('reports').update(patch).eq('id',id).then(function(r){if(r.error)throw r.error})}
+  else{var x=items.filter(function(i){return i.id===id})[0];if(x){x.status=st;if(afterUrl)x.after_url=afterUrl;else if(st!=='done')x.after_url=null;demoSave()}p=Promise.resolve()}
+  p.then(function(){return load()}).then(function(){toast(st==='work'?'Заявка в работе.':st==='done'?'Отмечено как устранённое.':st==='pending'?'Заявка возвращена на проверку.':'Заявка отклонена.');renderAll()}).catch(function(){toast('Не удалось изменить статус. Войдите в кабинет заново.')});
 }
 
 /* ---------- погода и пыльца ---------- */
@@ -560,7 +645,7 @@ function densify(c,step){
 function activeSpots(){return items.filter(function(x){return x.status==='pending'||x.status==='work'})}
 function classify(p,hs){
   var cls='g';
-  hs.forEach(function(h){var d=hav(p,[h.lat,h.lng]),r=RAD[h.size]||80;if(d<=r)cls='r';else if(d<=r+60&&cls!=='r')cls='y'});
+  hs.forEach(function(h){var d=zd(p,h);if(d<=0)cls='r';else if(d<=60&&cls!=='r')cls='y'});
   return cls;
 }
 function analyze(coords){
@@ -577,12 +662,17 @@ var COL={g:'#1f9a55',y:'#d9921a',r:'#d23b2e'};
 var RTXT={g:'Безопасный',y:'Есть участки риска',r:'Опасный'};
 function initRouteMap(){
   if(rt.map||typeof L==='undefined')return;
-  rt.map=L.map('routemap',{keyboard:false}).setView(CENTER,13);tiles(rt.map);rt.group=L.layerGroup().addTo(rt.map);drawRoute();
+  rt.map=L.map('routemap',mapOpts({keyboard:false})).setView(CENTER,13);tiles(rt.map);rt.group=L.layerGroup().addTo(rt.map);drawRoute();
 }
 function abIcon(t){return L.divIcon({className:'',html:'<div class="ab">'+t+'</div>',iconSize:[26,26],iconAnchor:[13,13]})}
 function drawRoute(){
   if(!rt.map)return;rt.group.clearLayers();
   activeSpots().forEach(function(h){
+    if(h.shape){
+      L.polygon(offsetPoly(h.shape,RB+60),{color:'#d9921a',weight:1,dashArray:'4 4',fillColor:'#d9921a',fillOpacity:.07,interactive:false}).addTo(rt.group);
+      L.polygon(offsetPoly(h.shape,RB),{color:'#d23b2e',weight:2,fillColor:'#d23b2e',fillOpacity:.25,interactive:false}).addTo(rt.group);
+      return;
+    }
     var r=RAD[h.size]||80;
     L.circle([h.lat,h.lng],{radius:r+60,color:'#d9921a',weight:1,dashArray:'4 4',fillColor:'#d9921a',fillOpacity:.07,interactive:false}).addTo(rt.group);
     L.circle([h.lat,h.lng],{radius:r,color:'#d23b2e',weight:2,fillColor:'#d23b2e',fillOpacity:.25,interactive:false}).addTo(rt.group);
@@ -603,7 +693,7 @@ function findAddr(which){
   var inp=$('rt'+which),q=inp.value.trim(),ul=$('sug'+which);ul.innerHTML='';$('rtErr').textContent='';
   if(q.length<3){$('rtErr').textContent='Введите улицу и номер дома.';return}
   ul.innerHTML='<li class="help">Ищем…</li>';
-  jget('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=ru&accept-language=ru&viewbox=39.45,47.38,39.95,47.10&bounded=1&q='+encodeURIComponent(q+' Ростов-на-Дону')).then(function(res){
+  jget('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=ru&accept-language=ru&viewbox=38.2,50.25,44.4,46.05&bounded=1&q='+encodeURIComponent(q+' Ростовская область')).then(function(res){
     ul.innerHTML='';
     if(!res.length){ul.innerHTML='<li class="help">Адрес не найден. Попробуйте написать иначе: «Пушкинская, 10».</li>';return}
     res.forEach(function(r){
@@ -623,17 +713,17 @@ function detourPoints(r){
   for(i=0;i<pts.length&&bad<0;i++)if(classify(pts[i],hs)!=='g')bad=i;
   if(bad<0)return[];
   var h=null,hd=1e9;
-  hs.forEach(function(q){var d=hav(pts[bad],[q.lat,q.lng])-(RAD[q.size]||80);if(d<hd){hd=d;h=q}});
+  hs.forEach(function(q){var d=zd(pts[bad],q);if(d<hd){hd=d;h=q}});
   /* точка маршрута, ближайшая к очагу: в ней идём «поперёк» */
   var near=bad,nd=1e9;
-  for(i=0;i<pts.length;i++){var d=hav(pts[i],[h.lat,h.lng]);if(d<nd){nd=d;near=i}}
-  var p0=pts[Math.max(0,near-4)],p1=pts[Math.min(pts.length-1,near+4)],k=Math.cos(h.lat*Math.PI/180);
+  for(i=0;i<pts.length;i++){var d=hav(pts[i],hsCenter(h));if(d<nd){nd=d;near=i}}
+  var p0=pts[Math.max(0,near-4)],p1=pts[Math.min(pts.length-1,near+4)],k=Math.cos(hsCenter(h)[0]*Math.PI/180),hc=hsCenter(h);
   var dx=(p1[1]-p0[1])*k*111320,dy=(p1[0]-p0[0])*111320,L2=Math.sqrt(dx*dx+dy*dy)||1,nx=-dy/L2,ny=dx/L2;
   var out=[];
   [1,-1].forEach(function(sg){
     [45,130].forEach(function(extra){
-      var D=(RAD[h.size]||80)+60+extra;
-      out.push([h.lat+sg*ny*D/111320,h.lng+sg*nx*D/(111320*k)]);
+      var D=hsRad(h)+60+extra;
+      out.push([hc[0]+sg*ny*D/111320,hc[1]+sg*nx*D/(111320*k)]);
     });
   });
   return out;

@@ -48,3 +48,7 @@ alter table settings enable row level security;
 create policy "settings_read" on settings for select using (true);
 create policy "settings_insert" on settings for insert to authenticated with check (true);
 create policy "settings_update" on settings for update to authenticated using (true) with check (true);
+
+
+-- Контур зарослей (по желанию жителя): список точек [[широта, долгота], ...]
+alter table reports add column if not exists shape jsonb;
